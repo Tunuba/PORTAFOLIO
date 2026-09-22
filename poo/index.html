@@ -3,191 +3,268 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sistema de Camiones — demo POO</title>
+<title>PINEED — demo</title>
 <style>
-  :root{--fondo:#eef1f5;--panel:#fff;--borde:#d4d9e2;--texto:#232732;--tenue:#6b7280;--azul:#2456c9;}
+  :root{--fondo:#f4f1ea;--panel:#fff;--borde:#dcd6c8;--texto:#1c2436;--tenue:#6b7280;--marca:#0a1e43;--marca2:#13305e;--acento:#8fa6c9;}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--fondo);color:var(--texto);font-family:Segoe UI,system-ui,sans-serif;}
-  .login-pantalla{min-height:100vh;display:flex;align-items:center;justify-content:center}
-  .login-caja{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:32px;width:320px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-  .login-caja h1{font-size:18px;margin:0 0 4px;text-align:center}
-  .login-caja p{font-size:12px;color:var(--tenue);text-align:center;margin:0 0 20px}
-  .login-caja input{width:100%;padding:10px;border:1px solid var(--borde);border-radius:6px;margin-bottom:10px;font-size:13px}
-  .login-caja button{width:100%;background:var(--azul);color:#fff;border:none;padding:10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px}
-  .login-caja .demo-nota{font-size:11px;color:var(--tenue);text-align:center;margin-top:12px}
-  .app{display:none}
-  .app.activa{display:grid}
-  .app{grid-template-columns:210px 1fr;min-height:100vh}
-  aside{background:#1c2333;color:#c9cedb;padding:16px 0}
-  aside .marca{color:#fff;font-weight:700;font-size:15px;padding:0 18px 16px;border-bottom:1px solid #313a52;margin-bottom:10px}
-  aside button{display:block;width:100%;text-align:left;background:transparent;border:none;color:#c9cedb;padding:10px 18px;font-size:13px;cursor:pointer}
-  aside button.on{background:#2a3350;color:#fff;border-left:3px solid #4d7cff}
-  main{padding:22px}
-  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-  .top h1{font-size:19px;margin:0}
-  .top .usuario{font-size:12px;color:var(--tenue)}
-  .toolbar{display:flex;gap:8px;margin-bottom:14px}
-  .toolbar button{background:var(--azul);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600}
-  .toolbar input{border:1px solid var(--borde);border-radius:6px;padding:8px 10px;font-size:12px;width:200px}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  .aviso-flot{position:fixed;top:10px;right:10px;font-size:11px;color:var(--tenue);border:1px solid var(--borde);background:#fffdf7;padding:4px 10px;border-radius:20px;z-index:50}
+
+  /* ---- login ---- */
+  .login-pantalla{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+  .login-izq{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;background:#fff}
+  .marca-badge{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--marca2),var(--marca));display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 12px 30px rgba(10,30,67,.25)}
+  .marca-badge svg{width:78px;height:78px}
+  .marca-nombre{font-weight:800;font-size:22px;letter-spacing:.04em;color:var(--marca);margin-bottom:2px}
+  .marca-sub{font-size:11px;color:var(--tenue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:34px}
+  .campo-login{width:100%;max-width:320px;margin-bottom:20px}
+  .campo-login label{display:block;font-weight:700;font-size:12px;letter-spacing:.04em;margin-bottom:6px}
+  .campo-login .caja{display:flex;align-items:center;border-bottom:1px solid #b7bfcc;padding-bottom:6px}
+  .campo-login input{border:none;outline:none;font-size:14px;flex:1;background:transparent;color:var(--texto)}
+  .campo-login button.mostrar{background:#8b93e8;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+  button.ingresar{width:100%;max-width:320px;background:var(--marca);color:#fff;border:none;padding:13px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-top:6px}
+  .demo-nota{max-width:320px;font-size:11px;color:var(--tenue);text-align:center;margin-top:14px}
+  .login-der{position:relative;background:linear-gradient(160deg,#7b8fae,#41567c);overflow:hidden}
+  .costal{position:absolute;background:linear-gradient(160deg,#93a6c4,#5c7196);border-radius:16px;box-shadow:inset 0 0 30px rgba(0,0,0,.15)}
+  .fruta{position:absolute;border-radius:50%}
+
+  /* ---- dashboard ---- */
+  .app{display:none;min-height:100vh;flex-direction:column}
+  .app.activa{display:flex}
+  header.top{background:#fff;border-bottom:1px solid var(--borde);padding:14px 26px;display:flex;justify-content:space-between;align-items:center}
+  header.top .marca-chica{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--marca)}
+  header.top .marca-chica .punto{width:30px;height:30px;border-radius:50%;background:var(--marca)}
+  select#menuNav{background:var(--marca);color:#fff;border:none;padding:10px 14px;border-radius:6px;font-size:12px;font-weight:600}
+  .banner{background:var(--marca);color:#fff;text-align:center;padding:16px;margin:26px auto;max-width:520px;border-radius:8px;font-weight:800;font-style:italic;font-size:26px;letter-spacing:.04em}
+  main.vista{flex:1;padding:0 30px 40px}
+  .inicio-grid{display:flex;justify-content:center;gap:70px;flex-wrap:wrap;padding:30px 10px}
+  .modulo{width:120px;height:110px;display:flex;align-items:center;justify-content:center;color:var(--marca);cursor:pointer;transition:.15s}
+  .modulo:hover{transform:translateY(-4px)}
+  .modulo svg{width:100%;height:100%}
+  .modulo-label{text-align:center;font-size:11px;color:var(--tenue);margin-top:-10px}
+
+  .panel-tabla{max-width:1000px;margin:20px auto}
+  .panel-tabla h1{font-size:20px;margin:0 0 4px}
+  .panel-tabla p.sub{font-size:12px;color:var(--tenue);margin:0 0 16px}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--borde);border-radius:8px;overflow:hidden}
-  th{background:#f4f6f9;text-align:left;font-size:11px;text-transform:uppercase;color:var(--tenue);padding:10px 12px;border-bottom:1px solid var(--borde)}
-  td{padding:10px 12px;font-size:13px;border-bottom:1px solid #eef0f3}
+  th{background:#eef0f6;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--tenue);padding:10px 12px;border-bottom:1px solid var(--borde)}
+  td{padding:10px 12px;font-size:13px;border-bottom:1px solid #eee}
   tr:last-child td{border-bottom:none}
-  tr.nueva{animation:entra .4s ease}
-  @keyframes entra{from{background:#e7f0ff}to{background:transparent}}
-  .estado{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600}
-  .estado.disponible{background:#dcfce7;color:#15803d}
-  .estado.ruta{background:#fef3c7;color:#92400e}
-  .estado.taller{background:#fee2e2;color:#b91c1c}
-  footer{font-size:11px;color:var(--tenue);margin-top:16px;display:flex;justify-content:space-between}
-  footer a{color:var(--azul);text-decoration:none}
+  .estado{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700}
+  .estado.activo{background:#dcfce7;color:#15803d}
+  .estado.inactivo{background:#f1f2f4;color:#6b7280}
+  .toolbar{display:flex;justify-content:flex-end;margin-bottom:10px}
+  .toolbar button{background:var(--marca);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;background:#fff}
+  footer a{color:var(--marca);text-decoration:none}
 </style>
 </head>
 <body>
-<div class="login-pantalla" id="pantalla-login">
-  <div class="login-caja">
-    <h1>Sistema de Transporte</h1>
-    <p>Gestión de camiones, clientes y pedidos</p>
-    <input type="text" placeholder="Usuario" value="admin">
-    <input type="password" placeholder="Contraseña" value="••••••">
-    <button id="btn-login">Ingresar</button>
-    <div class="demo-nota">Demo del portafolio — cualquier click entra, no valida nada real</div>
+<div class="aviso-flot">Demo estática del portafolio · sin cuenta ni datos reales</div>
+
+<div class="login-pantalla" id="pantallaLogin">
+  <div class="login-izq">
+    <div class="marca-badge">
+      <svg viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="5">
+        <path d="M20 55 C20 40 30 30 50 30 C70 30 80 40 80 55" stroke-linecap="round"/>
+        <circle cx="50" cy="58" r="20" fill="#fff" stroke="none"/>
+        <path d="M15 40 L30 20 M85 40 L70 20" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="marca-nombre">DISTRIBUIDORA PINE</div>
+    <div class="marca-sub">Alimento para ganado · PINEED</div>
+
+    <div class="campo-login">
+      <label>USUARIO</label>
+      <div class="caja"><input type="text" id="inUsuario" placeholder="Ingrese su usuario"></div>
+    </div>
+    <div class="campo-login">
+      <label>CONTRASEÑA</label>
+      <div class="caja">
+        <input type="password" id="inPass" placeholder="Ingrese su contraseña">
+        <button class="mostrar" id="btnMostrar">MOSTRAR</button>
+      </div>
+    </div>
+    <button class="ingresar" id="btnIngresar">Ingresar</button>
+    <div class="demo-nota">Demo del portafolio — cualquier usuario y contraseña entra, no valida nada real.</div>
   </div>
+  <div class="login-der" id="fondoLogin"></div>
 </div>
 
 <div class="app" id="app">
-  <aside>
-    <div class="marca">🚚 TransSystem</div>
-    <button class="on" data-v="camiones">Camiones</button>
-    <button data-v="clientes">Clientes</button>
-    <button data-v="pedidos">Pedidos</button>
-    <button data-v="creditos">Créditos</button>
-    <button data-v="ventas">Ventas</button>
-    <button data-v="trabajadores">Trabajadores</button>
-  </aside>
-  <main>
-    <div class="top">
-      <h1 id="titulo-vista">Camiones</h1>
-      <div class="usuario">Conectado como <b>admin</b></div>
+  <header class="top">
+    <div class="marca-chica"><div class="punto"></div> PINEED</div>
+    <select id="menuNav">
+      <option value="inicio">Seleccione una opción</option>
+      <option value="camiones">Gestión de Camiones</option>
+      <option value="clientes">Gestión de Clientes</option>
+      <option value="trabajadores">Planilla de Trabajadores</option>
+      <option value="ventas">Gestión de Ventas</option>
+      <option value="salir">Cerrar Sesión</option>
+    </select>
+  </header>
+
+  <main class="vista" id="vistaInicio">
+    <div class="banner">PINEED</div>
+    <div class="inicio-grid">
+      <div class="modulo" data-ir="camiones" title="Camiones">
+        <svg viewBox="0 0 64 64"><rect x="8" y="24" width="30" height="18" rx="2" fill="#0a1e43"/><path d="M38 30h10l8 8v4H38z" fill="#0a1e43"/><circle cx="18" cy="46" r="5" fill="#0a1e43"/><circle cx="46" cy="46" r="5" fill="#0a1e43"/></svg>
+      </div>
+      <div class="modulo" data-ir="ventas" title="Ventas">
+        <svg viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="36" rx="3" fill="#0a1e43"/><rect x="16" y="22" width="32" height="4" fill="#fff"/><rect x="16" y="30" width="22" height="4" fill="#fff"/><rect x="16" y="38" width="26" height="4" fill="#fff"/></svg>
+      </div>
+      <div class="modulo" data-ir="trabajadores" title="Trabajadores">
+        <svg viewBox="0 0 64 64"><rect x="12" y="10" width="34" height="44" rx="3" fill="#0a1e43"/><rect x="26" y="26" width="20" height="24" rx="2" fill="#fff"/><path d="M30 34h12M30 40h12" stroke="#0a1e43" stroke-width="2"/></svg>
+      </div>
     </div>
-    <div class="toolbar">
-      <button id="btn-agregar">+ Agregar</button>
-      <input type="text" placeholder="Buscar...">
-    </div>
-    <table>
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <footer>
-      <span>Maqueta del portafolio, inspirada en el proyecto real (Java, NetBeans, Excel como almacen de datos).</span>
-      <a href="../index.html">← volver al portafolio</a>
-    </footer>
+    <p class="modulo-label" style="max-width:420px;margin:0 auto">Click en un módulo, o elegí una opción en el menú de arriba a la derecha — igual que en la app real.</p>
   </main>
+
+  <main class="vista" id="vistaCamiones" style="display:none">
+    <div class="panel-tabla">
+      <h1>Gestión de Camiones</h1>
+      <p class="sub">Flota, mantenimiento y consumo de combustible.</p>
+      <div class="toolbar"><button id="btnAgregarCamion">+ Agregar camión</button></div>
+      <table>
+        <thead><tr><th>Placas</th><th>Modelo</th><th>Marca</th><th>Combustible</th><th>Km</th><th>Estado</th></tr></thead>
+        <tbody id="tbodyCamiones"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <main class="vista" id="vistaClientes" style="display:none">
+    <div class="panel-tabla">
+      <h1>Gestión de Clientes</h1>
+      <p class="sub">Catálogo de clientes y su precio asignado.</p>
+      <table>
+        <thead><tr><th>Cliente</th><th>Descripción</th><th>Tipo de precio</th></tr></thead>
+        <tbody id="tbodyClientes"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <main class="vista" id="vistaTrabajadores" style="display:none">
+    <div class="panel-tabla">
+      <h1>Planilla de Trabajadores</h1>
+      <p class="sub">Pilotos y personal, semanas trabajadas y sueldo.</p>
+      <table>
+        <thead><tr><th>Nombre</th><th>Descripción</th><th>Semanas</th><th>Sueldo semanal</th></tr></thead>
+        <tbody id="tbodyTrabajadores"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <main class="vista" id="vistaVentas" style="display:none">
+    <div class="panel-tabla">
+      <h1>Gestión de Ventas</h1>
+      <p class="sub">Registro de ventas con precio, flete y ganancia.</p>
+      <table>
+        <thead><tr><th>Producto</th><th>Cliente</th><th>Precio</th><th>Flete</th><th>Ganancia</th></tr></thead>
+        <tbody id="tbodyVentas"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <span>Maqueta del portafolio, calcada de la app real (Java Swing, Excel como base de datos) después de compilarla y correrla de verdad.</span>
+    <a href="../index.html">← volver al portafolio</a>
+  </footer>
 </div>
 
 <script>
-document.getElementById('btn-login').addEventListener('click', () => {
-  document.getElementById('pantalla-login').style.display = 'none';
+// decorar el panel derecho del login con "costales" y fruta, sin depender de una foto real
+(function(){
+  const cont = document.getElementById('fondoLogin');
+  const costales = [
+    [5,55,42,40],[42,40,40,42],[2,10,38,36],[38,2,42,36],[0,-10,30,28]
+  ];
+  costales.forEach(([l,t,w,h])=>{
+    const d = document.createElement('div');
+    d.className = 'costal';
+    d.style.left = l+'%'; d.style.top = t+'%'; d.style.width = w+'%'; d.style.height = h+'%';
+    cont.appendChild(d);
+  });
+  const colores = ['#e8b84b','#d9622b','#8aa64a','#c94f3d'];
+  for(let i=0;i<18;i++){
+    const f = document.createElement('div');
+    f.className = 'fruta';
+    const s = 14 + Math.random()*22;
+    f.style.width = s+'px'; f.style.height = s+'px';
+    f.style.left = (Math.random()*90)+'%';
+    f.style.top = (Math.random()*90)+'%';
+    f.style.background = colores[Math.floor(Math.random()*colores.length)];
+    f.style.opacity = 0.9;
+    cont.appendChild(f);
+  }
+})();
+
+document.getElementById('btnMostrar').addEventListener('click', () => {
+  const i = document.getElementById('inPass');
+  i.type = i.type === 'password' ? 'text' : 'password';
+});
+
+document.getElementById('btnIngresar').addEventListener('click', () => {
+  document.getElementById('pantallaLogin').style.display = 'none';
   document.getElementById('app').classList.add('activa');
 });
 
-const vistas = {
-  camiones: {
-    cols: ['Placa', 'Modelo', 'Capacidad', 'Estado'],
-    filas: [
-      ['C-14RTX', 'Volvo FH16', '18 ton', 'disponible'],
-      ['C-08KLP', 'Freightliner Cascadia', '22 ton', 'ruta'],
-      ['C-21MNB', 'Kenworth T680', '20 ton', 'disponible'],
-      ['C-03QWE', 'International LT', '16 ton', 'taller'],
-    ],
-    estadoCol: 3,
-    nueva: ['C-99NEW', 'Scania R450', '19 ton', 'disponible'],
-  },
-  clientes: {
-    cols: ['Nombre', 'NIT', 'Teléfono', 'Créditos activos'],
-    filas: [
-      ['Distribuidora Los Consentidos', '4521878-K', '5511-2233', '2'],
-      ['Ferretería El Tornillo', '8812340-1', '4022-9988', '0'],
-      ['Abarrotería Santa Rosa', '2201567-9', '3399-4477', '1'],
-    ],
-    nueva: ['Cliente Nuevo S.A.', '0000000-0', '0000-0000', '0'],
-  },
-  pedidos: {
-    cols: ['Folio', 'Cliente', 'Fecha', 'Estado'],
-    filas: [
-      ['PED-1042', 'Ferretería El Tornillo', '2026-09-18', 'ruta'],
-      ['PED-1041', 'Abarrotería Santa Rosa', '2026-09-17', 'disponible'],
-      ['PED-1039', 'Distribuidora Los Consentidos', '2026-09-15', 'disponible'],
-    ],
-    estadoCol: 3,
-    nueva: ['PED-1043', 'Cliente Nuevo S.A.', new Date().toISOString().slice(0,10), 'ruta'],
-  },
-  creditos: {
-    cols: ['Cliente', 'Monto', 'Vence', 'Estado'],
-    filas: [
-      ['Distribuidora Los Consentidos', 'Q12,400.00', '2026-10-01', 'ruta'],
-      ['Abarrotería Santa Rosa', 'Q3,200.00', '2026-09-25', 'disponible'],
-    ],
-    estadoCol: 3,
-    nueva: ['Cliente Nuevo S.A.', 'Q1,000.00', '2026-11-01', 'disponible'],
-  },
-  ventas: {
-    cols: ['Folio', 'Cliente', 'Total', 'Fecha'],
-    filas: [
-      ['V-3301', 'Ferretería El Tornillo', 'Q4,820.00', '2026-09-19'],
-      ['V-3300', 'Distribuidora Los Consentidos', 'Q9,150.00', '2026-09-18'],
-    ],
-    nueva: ['V-3302', 'Cliente Nuevo S.A.', 'Q2,000.00', new Date().toISOString().slice(0,10)],
-  },
-  trabajadores: {
-    cols: ['Nombre', 'Puesto', 'Turno', 'Estado'],
-    filas: [
-      ['Carlos Ramírez', 'Piloto', 'Diurno', 'disponible'],
-      ['Ana López', 'Despachadora', 'Diurno', 'disponible'],
-      ['Marco Tul', 'Piloto', 'Nocturno', 'ruta'],
-    ],
-    estadoCol: 3,
-    nueva: ['Empleado Nuevo', 'Piloto', 'Diurno', 'disponible'],
-  },
-};
+const camiones = [
+  ['AZX-408','Ram 1500','RAM','Diesel',68400,'inactivo'],
+  ['XYZ-678','S1900','Freightliner','Diesel',142200,'inactivo'],
+  ['GHI-123','X23','Renault','Diesel',201500,'inactivo'],
+  ['PIN-001','Hino 500','Hino','Diesel',18200,'activo'],
+  ['PIN-002','NPR','Isuzu','Diesel',9400,'activo'],
+];
+document.getElementById('tbodyCamiones').innerHTML = camiones.map(c => `
+  <tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4].toLocaleString()} km</td>
+  <td><span class="estado ${c[5]}">${c[5]==='activo'?'Activo':'Inactivo'}</span></td></tr>`).join('');
 
-function pintar(v) {
-  const datos = vistas[v];
-  document.getElementById('titulo-vista').textContent = v.charAt(0).toUpperCase() + v.slice(1);
-  document.getElementById('thead').innerHTML = '<tr>' + datos.cols.map(c => `<th>${c}</th>`).join('') + '<th></th></tr>';
-  pintarFilas(datos);
-}
-function pintarFilas(datos, nueva) {
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = datos.filas.map((f) => filaHtml(f, datos.estadoCol)).join('');
-  if (nueva) {
-    const tr = tbody.lastElementChild;
-    if (tr) tr.classList.add('nueva');
-  }
-}
-function filaHtml(f, estadoCol) {
-  return '<tr>' + f.map((v, i) => {
-    if (i === estadoCol) return `<td><span class="estado ${v}">${v === 'disponible' ? 'Disponible' : v === 'ruta' ? 'En ruta' : 'Taller'}</span></td>`;
-    return `<td>${v}</td>`;
-  }).join('') + '<td style="color:#94a3b8;font-size:12px">editar</td></tr>';
-}
-
-let vistaActual = 'camiones';
-pintar(vistaActual);
-
-document.querySelectorAll('aside button').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('aside button').forEach(x => x.classList.remove('on'));
-    b.classList.add('on');
-    vistaActual = b.dataset.v;
-    pintar(vistaActual);
-  });
+document.getElementById('btnAgregarCamion').addEventListener('click', () => {
+  const nuevo = ['PIN-0'+(camiones.length+1),'NHR','Isuzu','Diesel',0,'activo'];
+  camiones.push(nuevo);
+  const tbody = document.getElementById('tbodyCamiones');
+  tbody.innerHTML = camiones.map(c => `
+    <tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4].toLocaleString()} km</td>
+    <td><span class="estado ${c[5]}">${c[5]==='activo'?'Activo':'Inactivo'}</span></td></tr>`).join('');
 });
 
-document.getElementById('btn-agregar').addEventListener('click', () => {
-  const datos = vistas[vistaActual];
-  datos.filas.push(datos.nueva.slice());
-  pintarFilas(datos, true);
+const clientes = [
+  ['Clientes Varios','Cliente por defecto, precios generales','General'],
+  ['Rancho Vista Hermosa','Mayorista de alimento equino','Mayorista'],
+  ['Avícola San Marcos','Mayorista de alimento avícola','Mayorista'],
+  ['Granja El Progreso','Cliente frecuente, alimento porcino','Frecuente'],
+];
+document.getElementById('tbodyClientes').innerHTML = clientes.map(c => `<tr><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join('');
+
+const trabajadores = [
+  ['Ana Ramírez','Piloto de camión, rutas de zona montañosa',5,'Q4,350.00'],
+  ['Luis Recinos','Piloto de camión, transporte internacional',5,'Q4,600.00'],
+  ['Mario Xitumul','Piloto de camión, rutas de difícil acceso',5,'Q4,450.00'],
+];
+document.getElementById('tbodyTrabajadores').innerHTML = trabajadores.map(t => `<tr><td>${t[0]}</td><td>${t[1]}</td><td>${t[2]}</td><td>${t[3]}</td></tr>`).join('');
+
+const ventas = [
+  ['Alimento Equino 40lb','Rancho Vista Hermosa','Q245.00','Q3.00','Q2.00'],
+  ['Alimento Avícola 40lb','Avícola San Marcos','Q210.00','Q3.00','Q4.00'],
+  ['Alimento Porcino 40lb','Granja El Progreso','Q198.00','Q2.50','Q3.50'],
+];
+document.getElementById('tbodyVentas').innerHTML = ventas.map(v => `<tr><td>${v[0]}</td><td>${v[1]}</td><td>${v[2]}</td><td>${v[3]}</td><td>${v[4]}</td></tr>`).join('');
+
+const vistas = { inicio:'vistaInicio', camiones:'vistaCamiones', clientes:'vistaClientes', trabajadores:'vistaTrabajadores', ventas:'vistaVentas' };
+function mostrarVista(clave){
+  Object.values(vistas).forEach(id => document.getElementById(id).style.display = 'none');
+  if (clave === 'salir') {
+    document.getElementById('app').classList.remove('activa');
+    document.getElementById('pantallaLogin').style.display = 'grid';
+    document.getElementById('menuNav').value = 'inicio';
+    return;
+  }
+  document.getElementById(vistas[clave] || 'vistaInicio').style.display = 'block';
+}
+document.getElementById('menuNav').addEventListener('change', (e) => mostrarVista(e.target.value));
+document.querySelectorAll('.modulo').forEach(m => {
+  m.addEventListener('click', () => { document.getElementById('menuNav').value = m.dataset.ir; mostrarVista(m.dataset.ir); });
 });
 </script>
 </body>
