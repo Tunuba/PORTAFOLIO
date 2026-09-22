@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión de Cambios ITIL — demo</title>
+<style>
+  :root{--fondo:#eef1f4;--panel:#fff;--borde:#d7dde3;--texto:#1b232c;--tenue:#5b6b79;--acento:#d9730d;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);background:#fff;flex-wrap:wrap;gap:8px}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:6px}
+  .marca b{color:var(--acento)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  main{padding:26px;max-width:1040px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  p.sub{color:var(--tenue);font-size:13px;margin:0 0 20px;line-height:1.5}
+  .barra-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+  .filtros{display:flex;gap:6px;flex-wrap:wrap}
+  .filtros button{border:1px solid var(--borde);background:#fff;padding:7px 13px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--tenue)}
+  .filtros button.on{border-color:var(--acento);color:var(--acento);background:#fdf0e3}
+  .btn-nuevo{background:var(--acento);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn-nuevo:hover{filter:brightness(1.05)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--borde);border-radius:10px;overflow:hidden}
+  th{background:#f6f7f9;text-align:left;font-size:11px;text-transform:uppercase;color:var(--tenue);padding:10px 12px;border-bottom:1px solid var(--borde)}
+  td{padding:11px 12px;font-size:13px;border-bottom:1px solid #eef0f3;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr.nueva{animation:entra .6s ease}
+  @keyframes entra{from{background:#fdf0e3}to{background:transparent}}
+  .estado{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .estado.pendiente{background:#fef3c7;color:#92400e}
+  .estado.aprobado{background:#dbeafe;color:#1d4ed8}
+  .estado.progreso{background:#e0e7ff;color:#4338ca}
+  .estado.cerrado{background:#e5e7eb;color:#374151}
+  .prioridad{font-size:11px;font-weight:700}
+  .prioridad.critica{color:#b91c1c}
+  .prioridad.alta{color:#c2410c}
+  .prioridad.media{color:#92600e}
+  .prioridad.baja{color:#3f6212}
+  .btn-avanzar{font-size:11px;border:1px solid var(--borde);background:#fff;padding:6px 11px;border-radius:6px;cursor:pointer;color:var(--acento);font-weight:600}
+  .btn-avanzar:disabled{color:var(--tenue);cursor:default;border-color:var(--borde)}
+  .vacio-panel{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:40px;text-align:center;color:var(--tenue);font-size:13px}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;background:#fff;flex-wrap:wrap;gap:6px;margin-top:20px}
+  footer a{color:var(--acento);text-decoration:none}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(20,24,29,.45);align-items:center;justify-content:center;padding:16px}
+  .overlay.activo{display:flex}
+  .modal{background:#fff;border-radius:12px;padding:24px;width:100%;max-width:400px}
+  .modal h2{font-size:16px;margin:0 0 4px}
+  .modal p{font-size:12px;color:var(--tenue);margin:0 0 18px}
+  .campo{margin-bottom:14px}
+  .campo label{display:block;font-size:12px;font-weight:600;margin-bottom:5px}
+  .campo input, .campo select{width:100%;padding:9px 10px;border:1px solid var(--borde);border-radius:7px;font-size:13px;font-family:inherit}
+  .modal-acciones{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+  .btn-secundario{background:#fff;border:1px solid var(--borde);color:var(--tenue);padding:9px 15px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600}
+  .btn-primario{background:var(--acento);color:#fff;border:none;padding:9px 15px;border-radius:7px;font-size:13px;cursor:pointer;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <header style="margin:-26px -26px 20px -26px">
+    <div class="marca">🛠️ <b>Gestión de Cambios</b></div>
+    <div class="aviso">Demo estática del portafolio · simulación sobre GLPI, sin ticket real</div>
+  </header>
+  <h1>Solicitudes de cambio</h1>
+  <p class="sub">Flujo simplificado de un CAB: pendiente de aprobación → aprobado → en progreso → cerrado.</p>
+
+  <div class="barra-top">
+    <div class="filtros" id="filtros">
+      <button class="on" data-f="todos">Todos</button>
+      <button data-f="pendiente">Pendiente aprobación</button>
+      <button data-f="aprobado">Aprobado</button>
+      <button data-f="progreso">En progreso</button>
+      <button data-f="cerrado">Cerrado</button>
+    </div>
+    <button class="btn-nuevo" id="btn-nuevo">+ Nueva solicitud de cambio</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Título</th><th>Tipo</th><th>Prioridad</th><th>Estado</th><th></th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <footer>
+    <span>Maqueta del portafolio, inspirada en el proyecto real (simulación de implantación de ITIL sobre GLPI, para la clase de Technology Management).</span>
+    <a href="../index.html">← volver al portafolio</a>
+  </footer>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>Nueva solicitud de cambio</h2>
+    <p>Se crea con estado "pendiente aprobación", como en el flujo real: el cambio no entra por el portal, lo abre un técnico.</p>
+    <div class="campo">
+      <label for="f-titulo">Título</label>
+      <input id="f-titulo" type="text" placeholder="Ej. Enlace de respaldo para RED-CORE-01">
+    </div>
+    <div class="campo">
+      <label for="f-tipo">Tipo de cambio</label>
+      <select id="f-tipo">
+        <option>Estándar</option>
+        <option>Normal</option>
+        <option>Emergencia</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="f-prioridad">Prioridad</label>
+      <select id="f-prioridad">
+        <option>Baja</option>
+        <option selected>Media</option>
+        <option>Alta</option>
+        <option>Crítica</option>
+      </select>
+    </div>
+    <div class="modal-acciones">
+      <button class="btn-secundario" id="btn-cancelar">Cancelar</button>
+      <button class="btn-primario" id="btn-crear">Crear solicitud</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ESTADOS = ['pendiente', 'aprobado', 'progreso', 'cerrado'];
+const ETIQUETA_ESTADO = { pendiente: 'Pendiente aprobación', aprobado: 'Aprobado', progreso: 'En progreso', cerrado: 'Cerrado' };
+const ETIQUETA_PRIORIDAD = { baja: 'Baja', media: 'Media', alta: 'Alta', critica: 'Crítica' };
+
+let cambios = [
+  { id: 'CH-0104', titulo: 'Enlace de respaldo para RED-CORE-01', tipo: 'Normal', prioridad: 'critica', estado: 'progreso' },
+  { id: 'CH-0103', titulo: 'Actualización de firmware — switches sede norte', tipo: 'Estándar', prioridad: 'media', estado: 'aprobado' },
+  { id: 'CH-0102', titulo: 'Migración de correo a nuevo dominio', tipo: 'Normal', prioridad: 'alta', estado: 'pendiente' },
+  { id: 'CH-0101', titulo: 'Reemplazo de UPS bodega central', tipo: 'Estándar', prioridad: 'baja', estado: 'cerrado' },
+  { id: 'CH-0100', titulo: 'Parche de seguridad — servidor de facturación', tipo: 'Emergencia', prioridad: 'critica', estado: 'cerrado' },
+];
+let siguienteId = 105;
+let filtroActual = 'todos';
+
+function pintarTabla(idNuevo) {
+  const tbody = document.getElementById('tbody');
+  const visibles = filtroActual === 'todos' ? cambios : cambios.filter(c => c.estado === filtroActual);
+  if (visibles.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="vacio-panel">No hay cambios en este estado</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = visibles.map(c => {
+    const idx = ESTADOS.indexOf(c.estado);
+    const siguiente = ESTADOS[idx + 1];
+    return `<tr ${c.id === idNuevo ? 'class="nueva"' : ''}>
+      <td>${c.id}</td>
+      <td>${c.titulo}</td>
+      <td>${c.tipo}</td>
+      <td><span class="prioridad ${c.prioridad}">${ETIQUETA_PRIORIDAD[c.prioridad]}</span></td>
+      <td><span class="estado ${c.estado}">${ETIQUETA_ESTADO[c.estado]}</span></td>
+      <td>${siguiente
+        ? `<button class="btn-avanzar" data-id="${c.id}">Avanzar a ${ETIQUETA_ESTADO[siguiente]}</button>`
+        : `<button class="btn-avanzar" disabled>Cerrado</button>`}</td>
+    </tr>`;
+  }).join('');
+}
+pintarTabla();
+
+document.getElementById('tbody').addEventListener('click', e => {
+  if (!e.target.classList.contains('btn-avanzar') || e.target.disabled) return;
+  const c = cambios.find(x => x.id === e.target.dataset.id);
+  const idx = ESTADOS.indexOf(c.estado);
+  c.estado = ESTADOS[idx + 1];
+  pintarTabla();
+});
+
+document.getElementById('filtros').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#filtros button').forEach(b => b.classList.remove('on'));
+  e.target.classList.add('on');
+  filtroActual = e.target.dataset.f;
+  pintarTabla();
+});
+
+// ---------- modal nueva solicitud ----------
+const overlay = document.getElementById('overlay');
+document.getElementById('btn-nuevo').addEventListener('click', () => {
+  document.getElementById('f-titulo').value = '';
+  document.getElementById('f-tipo').value = 'Estándar';
+  document.getElementById('f-prioridad').value = 'Media';
+  overlay.classList.add('activo');
+});
+document.getElementById('btn-cancelar').addEventListener('click', () => overlay.classList.remove('activo'));
+overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('activo'); });
+
+document.getElementById('btn-crear').addEventListener('click', () => {
+  const titulo = document.getElementById('f-titulo').value.trim() || 'Solicitud de cambio sin título';
+  const tipo = document.getElementById('f-tipo').value;
+  const prioridad = document.getElementById('f-prioridad').value.toLowerCase()
+    .replace('crítica', 'critica');
+  const id = 'CH-0' + (siguienteId++);
+  cambios.unshift({ id, titulo, tipo, prioridad, estado: 'pendiente' });
+  overlay.classList.remove('activo');
+  filtroActual = 'todos';
+  document.querySelectorAll('#filtros button').forEach(b => b.classList.remove('on'));
+  document.querySelector('#filtros button[data-f="todos"]').classList.add('on');
+  pintarTabla(id);
+});
+</script>
+</body>
+</html>

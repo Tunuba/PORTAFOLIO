@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesh — demo</title>
+<style>
+  :root{--fondo:#faf8f4;--panel:#fff;--borde:#e6e2d8;--texto:#1c1c1c;--tenue:#78716c;--azul:#3654e0;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);background:#fff}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:6px}
+  .marca b{color:var(--azul)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  nav{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid var(--borde);background:#fff}
+  nav button{background:transparent;border:none;padding:9px 16px;border-radius:8px;font-size:13px;color:var(--tenue);cursor:pointer;font-weight:600}
+  nav button.activo{background:#eef0fd;color:var(--azul)}
+  main{padding:26px;max-width:1000px;margin:0 auto}
+  .vista{display:none}
+  .vista.activa{display:block}
+  h1{font-size:24px;margin:0 0 4px}
+  p.sub{color:var(--tenue);font-size:13px;margin:0 0 20px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:14px;position:relative}
+  .card .badge{position:absolute;top:10px;left:10px;background:#1c1c1c;color:#fff;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .card .foto{height:110px;border-radius:8px;background:linear-gradient(135deg,#e9e5d8,#d8d2c0);margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:30px}
+  .card .cat{font-size:10px;text-transform:uppercase;color:var(--azul);font-weight:700}
+  .card .nom{font-size:14px;font-weight:600;margin:4px 0}
+  .card .precio{font-size:15px;font-weight:700;margin-top:8px}
+  .card button{width:100%;margin-top:8px;background:var(--azul);color:#fff;border:none;padding:8px;border-radius:7px;font-size:12px;cursor:pointer;font-weight:600}
+  .card button:hover{filter:brightness(1.1)}
+  .fila-db{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .db{font-size:11px;border:1px solid var(--borde);padding:5px 11px;border-radius:20px;color:var(--tenue);background:#fff}
+  .db b{color:var(--texto)}
+  .carrito-caja{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:18px;max-width:420px}
+  .carrito-caja h2{font-size:16px;margin:0 0 4px}
+  .carrito-caja .nota{font-size:12px;color:var(--tenue);margin-bottom:14px;line-height:1.5}
+  .item-carrito{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--borde);font-size:13px}
+  .item-carrito .q{color:var(--tenue)}
+  .total{display:flex;justify-content:space-between;font-weight:700;padding-top:12px;font-size:15px}
+  .carrito-vacio{color:var(--tenue);font-size:13px;text-align:center;padding:20px 0}
+  .filtros{display:flex;gap:8px;margin-bottom:16px}
+  .filtros button{border:1px solid var(--borde);background:#fff;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--tenue)}
+  .filtros button.on{border-color:var(--azul);color:var(--azul);background:#eef0fd}
+  .anillo{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .anillo .info b{font-size:13px;display:block}
+  .anillo .info span{font-size:12px;color:var(--tenue)}
+  .anillo .acciones button{font-size:11px;border:1px solid var(--borde);background:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;margin-left:6px}
+  .vacio-panel{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:40px;text-align:center;color:var(--tenue);font-size:13px}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;background:#fff}
+  footer a{color:var(--azul);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca"># <b>Mesh</b></div>
+  <div class="aviso">Demo estática del portafolio · seis bases de datos reales en el proyecto de verdad, acá todo es simulado</div>
+</header>
+<nav>
+  <button class="activo" data-v="catalogo">Catálogo</button>
+  <button data-v="carrito">Carrito</button>
+  <button data-v="fraude">Detección de fraude</button>
+</nav>
+<main>
+  <div class="vista activa" id="v-catalogo">
+    <h1>El catálogo</h1>
+    <p class="sub">Cada pieza de esta pantalla vive en una base distinta, elegida por lo que necesitaba.</p>
+    <div class="fila-db">
+      <span class="db"><b>Postgres</b> — catálogo y pedidos</span>
+      <span class="db"><b>Redis</b> — carrito, caduca en 24h</span>
+      <span class="db"><b>ClickHouse</b> — más vendidos</span>
+      <span class="db"><b>Neo4j</b> — anillos de fraude</span>
+      <span class="db"><b>Elastic</b> — búsqueda</span>
+      <span class="db"><b>MongoDB</b> — reseñas</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="vista" id="v-carrito">
+    <h1>Tu carrito</h1>
+    <p class="sub">Vive en Redis, no en la base relacional. Caduca a las 24 horas sin tocarlo.</p>
+    <div class="carrito-caja">
+      <h2>Carrito <span id="cant-carrito">(0)</span></h2>
+      <p class="nota">Los precios son los de ahora, no los de cuando agregaste: el carrito guarda qué querés, no cuánto costaba.</p>
+      <div id="lista-carrito"><div class="carrito-vacio">Todavía no agregaste nada</div></div>
+      <div class="total" id="total-carrito" style="display:none"><span>Total</span><span id="total-monto">Q0.00</span></div>
+    </div>
+  </div>
+
+  <div class="vista" id="v-fraude">
+    <h1>Manipulación de reseñas</h1>
+    <p class="sub">Grupos de cuentas cuyo patrón de calificaciones no se explica por el uso normal de la tienda. Un worker recorre el grafo en Neo4j cada 15 minutos.</p>
+    <div class="filtros">
+      <button class="on" data-f="pendientes">Pendientes</button>
+      <button data-f="revisadas">Revisadas</button>
+      <button data-f="descartadas">Descartadas</button>
+    </div>
+    <div id="anillos"></div>
+  </div>
+</main>
+<footer>
+  <span>Maqueta del portafolio. El proyecto real corre con Docker, seis motores de base de datos y un ETL propio.</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const productos = [
+  {icono:'💻', cat:'Monitores', nom:'Monitor Cenit 32 4K', precio:4300, top:1},
+  {icono:'🍚', cat:'Cocina', nom:'Olla arrocera Grano 8 tazas', precio:540, top:2},
+  {icono:'💻', cat:'Laptops', nom:'Laptop Ámbar Campus 14', precio:5840, top:3},
+  {icono:'🎧', cat:'Audio', nom:'Audífonos Nimbus BT', precio:610},
+  {icono:'⌚', cat:'Wearables', nom:'Reloj Pulso Fit 2', precio:980},
+  {icono:'🖱️', cat:'Accesorios', nom:'Mouse Vector Pro', precio:210},
+];
+const grid = document.getElementById('grid');
+productos.forEach((p, i) => {
+  const c = document.createElement('div');
+  c.className = 'card';
+  c.innerHTML = `${p.top ? `<div class="badge">${p.top}</div>` : ''}
+    <div class="foto">${p.icono}</div>
+    <div class="cat">${p.cat}</div>
+    <div class="nom">${p.nom}</div>
+    <div class="precio">Q${p.precio.toLocaleString()}.00</div>
+    <button data-i="${i}">Agregar al carrito</button>`;
+  grid.appendChild(c);
+});
+
+let carrito = [];
+grid.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const p = productos[e.target.dataset.i];
+  const existente = carrito.find(x => x.nom === p.nom);
+  if (existente) existente.q++;
+  else carrito.push({...p, q: 1});
+  pintarCarrito();
+  e.target.textContent = '✓ Agregado';
+  setTimeout(() => e.target.textContent = 'Agregar al carrito', 900);
+});
+
+function pintarCarrito() {
+  const lista = document.getElementById('lista-carrito');
+  const cant = document.getElementById('cant-carrito');
+  const totalBox = document.getElementById('total-carrito');
+  cant.textContent = '(' + carrito.reduce((a, c) => a + c.q, 0) + ')';
+  if (carrito.length === 0) {
+    lista.innerHTML = '<div class="carrito-vacio">Todavía no agregaste nada</div>';
+    totalBox.style.display = 'none';
+    return;
+  }
+  lista.innerHTML = carrito.map(c => `<div class="item-carrito"><span>${c.nom}</span><span class="q">×${c.q} · Q${(c.precio*c.q).toLocaleString()}.00</span></div>`).join('');
+  const total = carrito.reduce((a, c) => a + c.precio * c.q, 0);
+  document.getElementById('total-monto').textContent = 'Q' + total.toLocaleString() + '.00';
+  totalBox.style.display = 'flex';
+}
+
+// navegacion de pestañas
+document.querySelectorAll('nav button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.remove('activo'));
+    document.querySelectorAll('.vista').forEach(x => x.classList.remove('activa'));
+    b.classList.add('activo');
+    document.getElementById('v-' + b.dataset.v).classList.add('activa');
+  });
+});
+
+// panel de fraude
+const anillosData = {
+  pendientes: [
+    {n:'Anillo #482', d:'6 cuentas, se calificaron entre sí 14 veces en 9 días sobre 3 productos'},
+    {n:'Anillo #483', d:'3 cuentas nuevas, reseñas de 5 estrellas en los primeros 10 minutos de creadas'},
+  ],
+  revisadas: [
+    {n:'Anillo #471', d:'Confirmado como manipulación — cuentas suspendidas'},
+  ],
+  descartadas: [
+    {n:'Anillo #465', d:'Falso positivo — familia comprando desde la misma red'},
+  ],
+};
+function pintarAnillos(tipo) {
+  const cont = document.getElementById('anillos');
+  const datos = anillosData[tipo];
+  if (!datos || datos.length === 0) { cont.innerHTML = '<div class="vacio-panel">No hay anillos en esta categoría</div>'; return; }
+  cont.innerHTML = datos.map(a => `<div class="anillo"><div class="info"><b>${a.n}</b><span>${a.d}</span></div><div class="acciones"><button>Ver grafo</button><button>Marcar revisado</button></div></div>`).join('');
+}
+document.querySelectorAll('.filtros button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.filtros button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    pintarAnillos(b.dataset.f);
+  });
+});
+pintarAnillos('pendientes');
+</script>
+</body>
+</html>

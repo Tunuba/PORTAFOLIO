@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SABRINA — demo</title>
+<style>
+  :root{
+    --fondo:#0c0a06; --panel:#161208; --borde:#3a2f14; --texto:#f3e3b8; --tenue:#8a7a52;
+    --acento:#ffb020; --ambar:#ffcf6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  header .marca{font-weight:700;font-size:18px}
+  header .marca span{color:var(--acento)}
+  header .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  .layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 53px)}
+  aside{border-right:1px solid var(--borde);padding:18px;overflow-y:auto}
+  aside h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--tenue);margin:6px 0 10px}
+  .accion{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--borde);color:var(--texto);padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:8px;transition:.15s}
+  .accion:hover{border-color:var(--acento)}
+  .accion small{display:block;color:var(--tenue);font-size:10px;margin-top:2px}
+  main{padding:24px;display:flex;flex-direction:column;gap:18px}
+  .terminal{background:#0a0806;border:1px solid var(--borde);border-radius:12px;padding:16px;font-family:ui-monospace,Consolas,monospace;font-size:13px;height:360px;overflow-y:auto;box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  .terminal .linea{margin-bottom:5px;opacity:0;animation:entra .25s forwards;color:var(--ambar)}
+  @keyframes entra{to{opacity:1}}
+  .terminal .linea.gris{color:var(--tenue)}
+  .terminal .linea.ok{color:#8bffb0}
+  .terminal .prompt{color:var(--tenue)}
+  .toggle-wrap{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:16px}
+  .toggle-wrap h3{margin:0 0 10px;font-size:13px;color:var(--tenue);text-transform:uppercase;letter-spacing:.06em}
+  .toggle{display:inline-flex;border:1px solid var(--borde);border-radius:20px;overflow:hidden;margin-bottom:14px}
+  .toggle button{background:transparent;border:none;color:var(--tenue);padding:6px 16px;font-size:12px;cursor:pointer}
+  .toggle button.activo{background:var(--acento);color:#2a1600;font-weight:700}
+  .dialogo{background:#0a0806;border:1px solid var(--borde);border-radius:8px;padding:14px;font-size:14px;line-height:1.6;min-height:70px}
+  .dialogo .quien{color:var(--acento);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:block}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🕹️ <span>SABRINA</span> — taller de ingeniería inversa</div>
+  <div class="aviso">Demo estática del portafolio · consola simulada, sin disco ni parche real</div>
+</header>
+<div class="layout">
+  <aside>
+    <h3>Herramientas</h3>
+    <button class="accion" data-accion="extraer">Extraer texto (.INO)<small>sabrina.xml → 62 textos</small></button>
+    <button class="accion" data-accion="ppf">Aplicar parche PPF<small>mods/sabrina_todo.ppf</small></button>
+    <button class="accion" data-accion="reinsertar">Reinsertar diálogo traducido<small>62 textos en español</small></button>
+    <button class="accion" data-accion="gif">Exportar animación (animar.py)<small>.ANI → GIF</small></button>
+    <button class="accion" data-accion="verificar">Verificar función (Ghidra + Unicorn)<small>decompilación funcional</small></button>
+    <h3>Cómo usar esta demo</h3>
+    <p style="font-size:12px;color:var(--tenue);line-height:1.5">Click en una herramienta para ver su log simulado en la consola de abajo.</p>
+  </aside>
+  <main>
+    <div class="terminal" id="terminal"></div>
+    <div class="toggle-wrap">
+      <h3>Diálogo — antes / después</h3>
+      <div class="toggle">
+        <button id="btn-antes" class="activo">Original (inglés)</button>
+        <button id="btn-despues">Traducido (español)</button>
+      </div>
+      <div class="dialogo" id="dialogo">
+        <span class="quien">Guardia del nivel 3</span>
+        <span id="dialogo-txt">"You shouldn't have come here alone. Turn back while you still can."</span>
+      </div>
+    </div>
+  </main>
+</div>
+<footer>
+  <span>Maqueta del portafolio, inspirada en SABRINA (mods y herramientas propias de ingeniería inversa para un juego de PS1 sin comunidad previa; acá la consola solo imprime un guion, no toca ningún disco).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const terminal = document.getElementById('terminal');
+
+function linea(txt, clase){
+  const d = document.createElement('div');
+  d.className = 'linea' + (clase ? ' ' + clase : '');
+  d.style.animationDelay = (terminal.children.length * 110) + 'ms';
+  d.textContent = txt;
+  terminal.appendChild(d);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+const guiones = {
+  extraer: [
+    ['gris', '$ python scripts/ino_extraer.py --sector sabrina.xml'],
+    ['gris', 'Leyendo sabrina.xml (extraido/, sector por archivo)...'],
+    ['gris', 'Recorriendo bloques .INO: sprites, texturas, modelos, letra, partículas...'],
+    ['gris', 'Encontrados 62 textos en el bloque de letra'],
+    ['ok', 'Listo — 62 textos extraídos a notas/textos.tsv'],
+  ],
+  ppf: [
+    ['gris', '$ .\\arrancar.ps1 -AplicarParche mods\\sabrina_todo.ppf'],
+    ['gris', 'Comparando disco\\ (Redump USA) contra el parche...'],
+    ['gris', 'Sector modificado: pantalla de carga en español'],
+    ['gris', 'Sector modificado: invencibilidad (5 instrucciones)'],
+    ['gris', 'Sector modificado: pantalón azul'],
+    ['ok', 'Listo — parche aplicado'],
+  ],
+  reinsertar: [
+    ['gris', '$ python scripts/letra.py --reinsertar notas/textos_es.tsv'],
+    ['gris', 'Verificando que cada texto entre en su sector original...'],
+    ['gris', 'Escribiendo 62 textos en español sobre el bloque de letra del .INO...'],
+    ['gris', 'Comprobando contra el juego (estados\\saltar)...'],
+    ['ok', 'Listo — diálogo reinsertado y comprobado en el emulador'],
+  ],
+  gif: [
+    ['gris', '$ python scripts/animar.py --animacion 118 --salida notas/anim118.gif'],
+    ['gris', 'Leyendo WRLDDATA (229 animaciones con nombre)...'],
+    ['gris', 'Componiendo cuadros desde el modelo + textura...'],
+    ['gris', 'Codificando GIF...'],
+    ['ok', 'Listo — GIF exportado (34 cuadros)'],
+  ],
+  verificar: [
+    ['gris', '$ python3 verificar.py src/geometria/camara.c func_8001FA3C'],
+    ['gris', 'Corriendo capturas reales contra el desensamblado con Unicorn...'],
+    ['gris', 'Coprocesador geometrico emulado (mvmva, op, rtps, rtpt, nclip)...'],
+    ['gris', 'Comparando registro por registro contra el original...'],
+    ['ok', 'Listo — IGUAL, 136/136 instrucciones cubiertas'],
+  ],
+};
+
+document.querySelectorAll('.accion').forEach(btn => {
+  btn.addEventListener('click', () => {
+    terminal.innerHTML = '';
+    const pasos = guiones[btn.dataset.accion] || [];
+    pasos.forEach(([clase, txt]) => linea(txt, clase));
+  });
+});
+
+const dialogos = {
+  antes: '"You shouldn\'t have come here alone. Turn back while you still can."',
+  despues: '"No debiste venir sola hasta aquí. Todavía puedes dar la vuelta."',
+};
+document.getElementById('btn-antes').addEventListener('click', () => cambiarDialogo('antes'));
+document.getElementById('btn-despues').addEventListener('click', () => cambiarDialogo('despues'));
+function cambiarDialogo(cual){
+  document.getElementById('dialogo-txt').textContent = dialogos[cual];
+  document.getElementById('btn-antes').classList.toggle('activo', cual === 'antes');
+  document.getElementById('btn-despues').classList.toggle('activo', cual === 'despues');
+}
+
+linea('Consola lista. Elegí una herramienta a la izquierda.', 'gris');
+</script>
+</body>
+</html>

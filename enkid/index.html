@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INGKID — demo</title>
+<style>
+  :root{--fondo:#fdf6ee;--panel:#fff;--borde:#ecdfd0;--texto:#2a2118;--tenue:#8a7c68;--acento:#ff6b4a;--bien:#1f9d80;--mal:#d64545;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);background:#fff;flex-wrap:wrap;gap:8px}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:6px}
+  .marca b{color:var(--acento)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  nav{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid var(--borde);background:#fff}
+  nav button{background:transparent;border:none;padding:9px 16px;border-radius:8px;font-size:13px;color:var(--tenue);cursor:pointer;font-weight:600}
+  nav button.activo{background:#ffece5;color:var(--acento)}
+  main{padding:26px;max-width:900px;margin:0 auto}
+  .vista{display:none}
+  .vista.activa{display:block}
+  h1{font-size:24px;margin:0 0 4px}
+  p.sub{color:var(--tenue);font-size:13px;margin:0 0 20px;line-height:1.5}
+  .resumen{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .resumen .xp{font-size:26px;font-weight:800;color:var(--acento)}
+  .resumen .xp span{font-size:12px;font-weight:600;color:var(--tenue);display:block}
+  .barra-ext{flex:1;min-width:180px}
+  .barra-fondo{background:#f1e9dc;border-radius:20px;height:10px;overflow:hidden}
+  .barra-rel{background:linear-gradient(90deg,var(--acento),#ff9271);height:100%;border-radius:20px;transition:width .5s ease}
+  .barra-txt{font-size:11px;color:var(--tenue);margin-top:5px}
+  .leccion{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .leccion .info b{font-size:14px;display:block}
+  .leccion .info span{font-size:12px;color:var(--tenue)}
+  .estado-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .estado-badge.completada{background:#e3f6ef;color:var(--bien)}
+  .estado-badge.en_curso{background:#ffece5;color:var(--acento)}
+  .estado-badge.bloqueada{background:#f1ede6;color:var(--tenue)}
+  .leccion.en_curso{border-color:var(--acento);cursor:pointer}
+  .leccion.en_curso:hover{background:#fff8f4}
+  .leccion.bloqueada{opacity:.6}
+  .leccion.bloqueada .info b::before{content:'🔒 ';font-size:11px}
+  .practica-caja{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:26px;max-width:480px;text-align:center}
+  .practica-caja .marcador{font-size:12px;color:var(--tenue);margin-bottom:14px}
+  .palabra{font-size:30px;font-weight:800;margin:6px 0 4px}
+  .instr{font-size:13px;color:var(--tenue);margin-bottom:20px}
+  .opciones{display:grid;gap:10px}
+  .opciones button{background:#fff;border:1px solid var(--borde);border-radius:8px;padding:12px;font-size:14px;cursor:pointer;color:var(--texto);font-weight:600;transition:transform .1s ease}
+  .opciones button:hover{border-color:var(--acento)}
+  .opciones button:active{transform:scale(.98)}
+  .opciones button.correcta{background:#e3f6ef;border-color:var(--bien);color:var(--bien)}
+  .opciones button.incorrecta{background:#fdeaea;border-color:var(--mal);color:var(--mal)}
+  .opciones button:disabled{cursor:default}
+  .feedback{margin-top:16px;font-size:13px;min-height:36px;line-height:1.5}
+  .feedback.bien{color:var(--bien);font-weight:700}
+  .feedback.mal{color:var(--mal);font-weight:700}
+  .btn-siguiente{margin-top:14px;background:var(--acento);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:none}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;background:#fff;flex-wrap:wrap;gap:6px}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🗣️ <b>INGKID</b></div>
+  <div class="aviso">Demo estática del portafolio · sin cuenta ni progreso real</div>
+</header>
+<nav>
+  <button class="activo" data-v="progreso">Mi progreso</button>
+  <button data-v="practica">Práctica</button>
+</nav>
+<main>
+  <div class="vista activa" id="v-progreso">
+    <h1>Nivel A1 · Principiantes</h1>
+    <p class="sub">Tus lecciones de esta banda. Completá la que está activa para desbloquear la siguiente.</p>
+    <div class="resumen">
+      <div class="xp"><span>XP</span><span id="xp-total" style="font-size:26px;font-weight:800;color:var(--acento)">120</span></div>
+      <div class="barra-ext">
+        <div class="barra-fondo"><div class="barra-rel" id="barra-progreso" style="width:20%"></div></div>
+        <div class="barra-txt" id="texto-progreso">1 de 5 lecciones completadas</div>
+      </div>
+    </div>
+    <div id="lista-lecciones"></div>
+  </div>
+
+  <div class="vista" id="v-practica">
+    <h1>Elegí la traducción correcta</h1>
+    <p class="sub">Un ejercicio del Estudio de Vocabulario, sin cronómetro ni cuenta.</p>
+    <div class="practica-caja">
+      <div class="marcador" id="marcador">Aciertos: 0 / 0</div>
+      <div class="instr">¿Cómo se dice esta palabra en español?</div>
+      <div class="palabra" id="palabra-en">house</div>
+      <div class="opciones" id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-siguiente" id="btn-siguiente">Otra palabra →</button>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>Maqueta del portafolio, inspirada en el proyecto real (INGKID: academia por niveles, examenes y un Estudio de Voz con jueces de pronunciación, backend en Go y frontend en Vue).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+// ---------- Mi progreso ----------
+const lecciones = [
+  { titulo: 'Saludos y presentaciones', detalle: '8 tarjetas · 2 diálogos', estado: 'completada', xp: 40 },
+  { titulo: 'La familia', detalle: '10 tarjetas · 1 diálogo', estado: 'en_curso', xp: 45 },
+  { titulo: 'Los números del 1 al 20', detalle: '12 tarjetas · 1 juego', estado: 'bloqueada', xp: 45 },
+  { titulo: 'Colores y formas', detalle: '9 tarjetas · 1 diálogo', estado: 'bloqueada', xp: 40 },
+  { titulo: 'Repaso: examen de banda', detalle: '15 preguntas', estado: 'bloqueada', xp: 60 },
+];
+let xpTotal = 120;
+
+function pintarLecciones() {
+  const cont = document.getElementById('lista-lecciones');
+  cont.innerHTML = lecciones.map((l, i) => `
+    <div class="leccion ${l.estado}" data-i="${i}">
+      <div class="info">
+        <b>${l.titulo}</b>
+        <span>${l.detalle}</span>
+      </div>
+      <span class="estado-badge ${l.estado}">${
+        l.estado === 'completada' ? '✓ Completada' : l.estado === 'en_curso' ? 'En curso · tocá para terminar' : 'Bloqueada'
+      }</span>
+    </div>`).join('');
+  const completadas = lecciones.filter(l => l.estado === 'completada').length;
+  document.getElementById('barra-progreso').style.width = (completadas / lecciones.length * 100) + '%';
+  document.getElementById('texto-progreso').textContent = `${completadas} de ${lecciones.length} lecciones completadas`;
+  document.getElementById('xp-total').textContent = xpTotal;
+}
+
+document.getElementById('lista-lecciones').addEventListener('click', e => {
+  const fila = e.target.closest('.leccion');
+  if (!fila) return;
+  const i = Number(fila.dataset.i);
+  if (lecciones[i].estado !== 'en_curso') return;
+  lecciones[i].estado = 'completada';
+  xpTotal += lecciones[i].xp;
+  if (lecciones[i + 1] && lecciones[i + 1].estado === 'bloqueada') {
+    lecciones[i + 1].estado = 'en_curso';
+  }
+  pintarLecciones();
+});
+pintarLecciones();
+
+// ---------- Práctica ----------
+const palabras = [
+  { en: 'house', opciones: ['casa', 'calle', 'silla'], correcta: 0 },
+  { en: 'friend', opciones: ['fuerte', 'amigo', 'frío'], correcta: 1 },
+  { en: 'water', opciones: ['viento', 'fuego', 'agua'], correcta: 2 },
+  { en: 'school', opciones: ['escuela', 'trabajo', 'cocina'], correcta: 0 },
+  { en: 'happy', opciones: ['triste', 'cansado', 'feliz'], correcta: 2 },
+  { en: 'dog', opciones: ['gato', 'perro', 'pájaro'], correcta: 1 },
+];
+let indiceActual = 0;
+let aciertos = 0, intentos = 0;
+
+function mostrarPalabra() {
+  const p = palabras[indiceActual];
+  document.getElementById('palabra-en').textContent = p.en;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btn-siguiente').style.display = 'none';
+  const cont = document.getElementById('opciones');
+  cont.innerHTML = p.opciones.map((o, i) => `<button data-i="${i}">${o}</button>`).join('');
+}
+
+document.getElementById('opciones').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const p = palabras[indiceActual];
+  const elegido = Number(e.target.dataset.i);
+  intentos++;
+  const botones = document.querySelectorAll('#opciones button');
+  botones.forEach(b => b.disabled = true);
+  const feedback = document.getElementById('feedback');
+  if (elegido === p.correcta) {
+    aciertos++;
+    e.target.classList.add('correcta');
+    feedback.textContent = '¡Correcto! Bien hecho.';
+    feedback.className = 'feedback bien';
+  } else {
+    e.target.classList.add('incorrecta');
+    botones[p.correcta].classList.add('correcta');
+    feedback.textContent = 'Casi. La respuesta correcta era "' + p.opciones[p.correcta] + '".';
+    feedback.className = 'feedback mal';
+  }
+  document.getElementById('marcador').textContent = `Aciertos: ${aciertos} / ${intentos}`;
+  document.getElementById('btn-siguiente').style.display = 'inline-block';
+});
+
+document.getElementById('btn-siguiente').addEventListener('click', () => {
+  indiceActual = (indiceActual + 1) % palabras.length;
+  mostrarPalabra();
+});
+mostrarPalabra();
+
+// ---------- navegación de pestañas ----------
+document.querySelectorAll('nav button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.remove('activo'));
+    document.querySelectorAll('.vista').forEach(x => x.classList.remove('activa'));
+    b.classList.add('activo');
+    document.getElementById('v-' + b.dataset.v).classList.add('activa');
+  });
+});
+</script>
+</body>
+</html>

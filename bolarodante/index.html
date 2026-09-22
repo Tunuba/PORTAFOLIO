@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bola Rodante — demo</title>
+<style>
+  :root{
+    --fondo:#0e1a14; --panel:#152720; --borde:#274236; --texto:#eaf3ee; --tenue:#7ea395;
+    --acento:#7bffb0; --dorado:#ffcf4d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
+  .marca span{color:var(--acento)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  main{max-width:960px;margin:0 auto;padding:24px 20px 100px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+  .reloj{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:8px 16px;font-family:ui-monospace,Consolas,monospace;font-size:20px;font-weight:700;color:var(--acento)}
+  .progreso-txt{font-size:13px;color:var(--tenue)}
+  .pista{position:relative;background:var(--panel);border:1px solid var(--borde);border-radius:16px;padding:34px 24px 24px;margin-bottom:20px;overflow-x:auto}
+  .linea-camino{position:relative;height:6px;background:var(--borde);border-radius:4px;margin:0 20px 26px}
+  .linea-camino .avance{position:absolute;top:0;left:0;height:100%;background:linear-gradient(90deg,var(--acento),var(--dorado));border-radius:4px;transition:width .5s ease}
+  .nodos{display:flex;justify-content:space-between;gap:4px}
+  .nodo{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;position:relative}
+  .nodo .bola{width:38px;height:38px;border-radius:50%;background:#0d1712;border:2px solid var(--borde);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--tenue);transition:.2s}
+  .nodo:hover .bola{border-color:var(--acento)}
+  .nodo.hecho .bola{background:var(--acento);border-color:var(--acento);color:#062018}
+  .nodo.actual .bola{border-color:var(--dorado);box-shadow:0 0 0 4px rgba(255,207,77,.18)}
+  .nodo.bloqueado .bola{opacity:.4;cursor:not-allowed}
+  .nodo .etiqueta{font-size:10px;color:var(--tenue);text-align:center;max-width:80px;line-height:1.3}
+  .marcador-bola{position:absolute;top:-14px;font-size:20px;transition:left .5s ease;transform:translateX(-50%)}
+  .detalle{background:var(--panel);border:1px solid var(--borde);border-radius:14px;padding:20px;margin-bottom:20px;min-height:120px}
+  .detalle h2{margin:0 0 6px;font-size:17px}
+  .detalle .n{font-size:11px;color:var(--acento);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .detalle p{color:var(--tenue);font-size:13px;line-height:1.6;margin:0 0 14px}
+  .detalle .vacio{color:var(--tenue);font-size:13px}
+  button.avanzar{background:var(--acento);color:#062018;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px}
+  button.avanzar:hover{filter:brightness(1.08)}
+  button.avanzar:disabled{opacity:.4;cursor:not-allowed}
+  button.reset{background:transparent;border:1px solid var(--borde);color:var(--tenue);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px;margin-left:8px}
+  .meta-msg{display:none;background:linear-gradient(135deg,#0f2a1c,#153020);border:1px solid var(--dorado);color:var(--dorado);border-radius:12px;padding:14px 18px;text-align:center;font-weight:800;margin-bottom:20px}
+  footer{position:fixed;bottom:0;left:0;right:0;background:#0a1310;border-top:1px solid var(--borde);padding:10px 20px;font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;gap:10px}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">⚪ Bola<span>Rodante</span></div>
+  <div class="aviso">Demo estática del portafolio · sin cuenta ni datos reales</div>
+</header>
+<main>
+  <div class="meta-msg" id="meta-msg">🏆 ¡Llegaste a la meta! tiempo final: <span id="tiempo-final"></span></div>
+
+  <div class="top">
+    <div class="reloj" id="reloj">00:00.0</div>
+    <div class="progreso-txt" id="progreso-txt">Tramo 1 de 8 · click en un poste para ver el obstáculo</div>
+  </div>
+
+  <div class="pista">
+    <div class="linea-camino"><div class="avance" id="avance" style="width:0%"></div></div>
+    <div class="nodos" id="nodos"></div>
+  </div>
+
+  <div class="detalle" id="detalle">
+    <div class="vacio">Elegí un tramo de la pista para ver qué obstáculo tiene.</div>
+  </div>
+
+  <button class="avanzar" id="btn-avanzar" disabled>Marcar tramo completado →</button>
+  <button class="reset" id="btn-reset">Volver a la salida</button>
+</main>
+<footer>
+  <span>Maqueta del portafolio, inspirada en el proyecto real: un plataformero de Roblox donde controlás una bola física por ocho tramos con obstáculos.</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const TRAMOS = [
+  {n:'Salida', d:'Pista ancha para agarrarle la mano al control. Sin obstáculos, solo para rodar y sentir la cámara.'},
+  {n:'Las barras que giran', d:'Tres barras rojas barriendo el pasillo de lado a lado. Hay que pasar entre los huecos del giro.'},
+  {n:'Los saltos', d:'Se acaba el piso: tres plataformas sueltas en el aire. Cada salto cuenta.'},
+  {n:'La cinta', d:'El piso azul empuja hacia atrás todo el tiempo. Hay que ganarle acelerando más que la cinta.'},
+  {n:'Los martillos', d:'Tres brazos girando como martillos. El truco es mirar el eje, no la posición: orbitan sin romperse.'},
+  {n:'El salto grande', d:'El trampolín morado te tira hasta la plataforma de enfrente, pero solo si llegás con velocidad.'},
+  {n:'El puente angosto', d:'Sin barandas y con una barra girando justo en el medio. Un paso en falso es caída directa.'},
+  {n:'La bajada y la meta', d:'La rampa final y el arco dorado. Si llegaste hasta aquí, ya casi terminaste la pista.'},
+];
+
+let actual = 0; // tramo actual (0-indexado)
+let completados = new Set();
+let cronoInicio = null, cronoInterval = null, terminado = false;
+
+const nodosCont = document.getElementById('nodos');
+const detalle = document.getElementById('detalle');
+const btnAvanzar = document.getElementById('btn-avanzar');
+
+function pintarNodos(){
+  nodosCont.innerHTML = '';
+  TRAMOS.forEach((t, i) => {
+    const div = document.createElement('div');
+    let clase = 'nodo';
+    if (completados.has(i)) clase += ' hecho';
+    else if (i === actual) clase += ' actual';
+    else if (i > actual) clase += ' bloqueado';
+    div.className = clase;
+    div.innerHTML = `<div class="bola">${completados.has(i) ? '✓' : i+1}</div><div class="etiqueta">${t.n}</div>`;
+    div.addEventListener('click', () => mostrarTramo(i));
+    nodosCont.appendChild(div);
+  });
+  document.getElementById('avance').style.width = (completados.size / TRAMOS.length * 100) + '%';
+}
+
+function mostrarTramo(i){
+  if (i > actual) {
+    detalle.innerHTML = '<div class="vacio">Todavía no llegás hasta ahí — completá el tramo ' + (actual+1) + ' primero.</div>';
+    return;
+  }
+  const t = TRAMOS[i];
+  detalle.innerHTML = `<div class="n">Tramo ${i+1} de ${TRAMOS.length}${completados.has(i) ? ' · completado' : ''}</div><h2>${t.n}</h2><p>${t.d}</p>`;
+  btnAvanzar.disabled = (i !== actual) || terminado;
+  btnAvanzar.textContent = (actual === TRAMOS.length - 1) ? 'Llegar a la meta →' : 'Marcar tramo completado →';
+  detalle.dataset.tramoVisto = i;
+}
+
+function formatoTiempo(ms){
+  const s = ms/1000;
+  const min = Math.floor(s/60);
+  const seg = (s%60).toFixed(1);
+  return String(min).padStart(2,'0') + ':' + String(seg).padStart(4,'0');
+}
+
+function iniciarCrono(){
+  if (cronoInterval) return;
+  cronoInicio = Date.now();
+  cronoInterval = setInterval(() => {
+    document.getElementById('reloj').textContent = formatoTiempo(Date.now() - cronoInicio);
+  }, 100);
+}
+
+btnAvanzar.addEventListener('click', () => {
+  if (terminado) return;
+  iniciarCrono();
+  completados.add(actual);
+  if (actual < TRAMOS.length - 1) {
+    actual++;
+    document.getElementById('progreso-txt').textContent = 'Tramo ' + (actual+1) + ' de ' + TRAMOS.length;
+    pintarNodos();
+    mostrarTramo(actual);
+  } else {
+    terminado = true;
+    clearInterval(cronoInterval);
+    pintarNodos();
+    document.getElementById('meta-msg').style.display = 'block';
+    document.getElementById('tiempo-final').textContent = formatoTiempo(Date.now() - cronoInicio);
+    document.getElementById('progreso-txt').textContent = '¡Pista completa!';
+    btnAvanzar.disabled = true;
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  actual = 0; completados = new Set(); terminado = false;
+  clearInterval(cronoInterval); cronoInterval = null; cronoInicio = null;
+  document.getElementById('reloj').textContent = '00:00.0';
+  document.getElementById('meta-msg').style.display = 'none';
+  document.getElementById('progreso-txt').textContent = 'Tramo 1 de 8 · click en un poste para ver el obstáculo';
+  pintarNodos();
+  detalle.innerHTML = '<div class="vacio">Elegí un tramo de la pista para ver qué obstáculo tiene.</div>';
+  btnAvanzar.disabled = true;
+});
+
+pintarNodos();
+</script>
+</body>
+</html>

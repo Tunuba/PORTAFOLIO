@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LedKid Generador 3D — demo</title>
+<style>
+  :root{--fondo:#0b0e14;--panel:#11151d;--borde:#232b3a;--texto:#e8ecf3;--tenue:#8994a8;--acento:#ff9944;--verde:#00d4aa;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  header .marca{font-weight:700;font-size:18px}
+  header .marca span{color:var(--acento)}
+  header .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  .layout{display:grid;grid-template-columns:420px 1fr;min-height:calc(100vh - 53px)}
+  .panel{padding:26px;border-right:1px solid var(--borde)}
+  .panel h1{font-size:20px;margin:0 0 6px}
+  .panel p.sub{color:var(--tenue);font-size:13px;margin:0 0 20px}
+  textarea{width:100%;min-height:90px;background:var(--panel);border:1px solid var(--borde);border-radius:10px;color:var(--texto);padding:12px;font-family:inherit;font-size:14px;resize:vertical}
+  .ejemplos{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}
+  .chip{font-size:11px;border:1px solid var(--borde);color:var(--tenue);padding:6px 10px;border-radius:20px;cursor:pointer}
+  .chip:hover{color:var(--texto);border-color:var(--acento)}
+  label.campo{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tenue);display:block;margin-bottom:6px}
+  select{width:100%;background:var(--panel);border:1px solid var(--borde);color:var(--texto);padding:10px;border-radius:8px;font-size:13px;margin-bottom:20px}
+  button.generar{width:100%;background:var(--acento);color:#2b1400;border:none;padding:13px;border-radius:9px;font-weight:700;font-size:14px;cursor:pointer}
+  button.generar:disabled{opacity:.5;cursor:default}
+  .visor{padding:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .escena{width:100%;max-width:520px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;perspective:900px}
+  .estado-vacio{color:var(--tenue);font-size:13px;text-align:center}
+  .cubo{width:160px;height:160px;position:relative;transform-style:preserve-3d;animation:girar 9s linear infinite;opacity:0;transition:opacity .4s}
+  .cubo.mostrar{opacity:1}
+  @keyframes girar{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+  .cara{position:absolute;width:160px;height:160px;background:linear-gradient(145deg,#ff9944cc,#cc6d1fcc);border:1px solid #ffb066;box-shadow:inset 0 0 30px rgba(0,0,0,.25)}
+  .cara.f{transform:translateZ(80px)}
+  .cara.b{transform:rotateY(180deg) translateZ(80px)}
+  .cara.l{transform:rotateY(-90deg) translateZ(80px)}
+  .cara.r{transform:rotateY(90deg) translateZ(80px)}
+  .cara.t{transform:rotateX(90deg) translateZ(80px);background:linear-gradient(145deg,#ffb066cc,#ff9944cc)}
+  .cara.d{transform:rotateX(-90deg) translateZ(80px);background:linear-gradient(145deg,#a85417cc,#7a3d10cc)}
+  .stats{margin-top:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;width:100%;max-width:520px;opacity:0;transition:opacity .4s}
+  .stats.mostrar{opacity:1}
+  .stat{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:12px;text-align:center}
+  .stat b{display:block;font-size:16px}
+  .stat span{font-size:10px;color:var(--tenue);text-transform:uppercase}
+  .descargar{margin-top:16px;background:transparent;border:1px solid var(--verde);color:var(--verde);padding:10px 18px;border-radius:8px;font-size:13px;cursor:pointer;opacity:0;transition:opacity .4s}
+  .descargar.mostrar{opacity:1}
+  .cargando{color:var(--tenue);font-size:13px;display:none;align-items:center;gap:8px}
+  .cargando.activo{display:flex}
+  .punto{width:6px;height:6px;border-radius:50%;background:var(--acento);animation:parpadeo 1s infinite}
+  .punto:nth-child(2){animation-delay:.2s}.punto:nth-child(3){animation-delay:.4s}
+  @keyframes parpadeo{0%,100%{opacity:.2}50%{opacity:1}}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🖨️ Led<span>Kid</span> — Generador 3D</div>
+  <div class="aviso">Demo estática del portafolio · sin IA ni impresora reales</div>
+</header>
+<div class="layout">
+  <div class="panel">
+    <h1>Describí la pieza</h1>
+    <p class="sub">Escribí en español lo que necesitás y el generador arma un modelo 3D imprimible.</p>
+    <label class="campo">Descripción</label>
+    <textarea id="desc" placeholder="una caja para ESP32 con tapa, hueco USB y rejilla de ventilación"></textarea>
+    <div class="ejemplos" id="ejemplos"></div>
+    <label class="campo">Cama de impresión</label>
+    <select id="cama">
+      <option>Ender 3 (220×220mm)</option>
+      <option>Prusa Mini (180×180mm)</option>
+      <option>A2L (350×320mm)</option>
+    </select>
+    <button class="generar" id="btn-generar">Generar pieza</button>
+    <div class="cargando" id="cargando" style="margin-top:12px"><div class="punto"></div><div class="punto"></div><div class="punto"></div><span id="cargando-txt">Generando...</span></div>
+  </div>
+  <div class="visor">
+    <div class="escena">
+      <div class="estado-vacio" id="vacio">Tu pieza va a aparecer acá<br>una vez que la generes</div>
+      <div class="cubo" id="cubo">
+        <div class="cara f"></div><div class="cara b"></div><div class="cara l"></div>
+        <div class="cara r"></div><div class="cara t"></div><div class="cara d"></div>
+      </div>
+    </div>
+    <div class="stats" id="stats">
+      <div class="stat"><b id="s-dim">—</b><span>Dimensiones</span></div>
+      <div class="stat"><b id="s-vol">—</b><span>Volumen</span></div>
+      <div class="stat"><b id="s-tiempo">—</b><span>Tiempo estimado</span></div>
+    </div>
+    <button class="descargar" id="btn-descargar">⬇ Descargar STL (demo)</button>
+  </div>
+</div>
+<footer>
+  <span>Esto es una maqueta del portafolio. El generador real usa un modelo de IA y arma la geometría de verdad.</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const ejemplos = [
+  'una caja para ESP32 con tapa, hueco USB y rejilla de ventilación',
+  'un cuadrado de 5cm con 9 compartimentos para componentes chiquitos',
+  'un soporte en L para sensor ultrasonico HC-SR04 con agujeros de tornillo',
+  'un porta-lapices cuadrado de 8cm con 4 divisiones',
+  'un llavero rectangular de 40x15mm con agujero de 5mm en una esquina',
+];
+const cont = document.getElementById('ejemplos');
+ejemplos.forEach(e => {
+  const c = document.createElement('div');
+  c.className = 'chip';
+  c.textContent = e.length > 38 ? e.slice(0, 38) + '…' : e;
+  c.title = e;
+  c.addEventListener('click', () => document.getElementById('desc').value = e);
+  cont.appendChild(c);
+});
+
+const btn = document.getElementById('btn-generar');
+const cargando = document.getElementById('cargando');
+const cargandoTxt = document.getElementById('cargando-txt');
+const vacio = document.getElementById('vacio');
+const cubo = document.getElementById('cubo');
+const stats = document.getElementById('stats');
+const descargar = document.getElementById('btn-descargar');
+
+const pasos = ['Analizando descripción...', 'Calculando geometría...', 'Generando malla STL...', 'Verificando imprimibilidad...'];
+
+btn.addEventListener('click', () => {
+  if (!document.getElementById('desc').value.trim()) { document.getElementById('desc').focus(); return; }
+  btn.disabled = true;
+  vacio.style.display = 'none';
+  cubo.classList.remove('mostrar');
+  stats.classList.remove('mostrar');
+  descargar.classList.remove('mostrar');
+  cargando.classList.add('activo');
+  let i = 0;
+  cargandoTxt.textContent = pasos[0];
+  const iv = setInterval(() => {
+    i++;
+    if (i < pasos.length) cargandoTxt.textContent = pasos[i];
+    else clearInterval(iv);
+  }, 550);
+  setTimeout(() => {
+    cargando.classList.remove('activo');
+    cubo.classList.add('mostrar');
+    document.getElementById('s-dim').textContent = (38 + Math.floor(Math.random()*40)) + '×' + (38 + Math.floor(Math.random()*40)) + '×' + (20 + Math.floor(Math.random()*20)) + 'mm';
+    document.getElementById('s-vol').textContent = (8 + Math.floor(Math.random()*20)) + ' cm³';
+    document.getElementById('s-tiempo').textContent = (35 + Math.floor(Math.random()*90)) + ' min';
+    stats.classList.add('mostrar');
+    descargar.classList.add('mostrar');
+    btn.disabled = false;
+  }, 2400);
+});
+
+descargar.addEventListener('click', () => {
+  descargar.textContent = '✓ (demo — no hay archivo real)';
+  setTimeout(() => descargar.textContent = '⬇ Descargar STL (demo)', 1600);
+});
+</script>
+</body>
+</html>

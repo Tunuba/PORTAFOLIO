@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIPIX — demo</title>
+<style>
+  :root{
+    --fondo:#05070d; --panel:#0c111c; --borde:#1c2740; --texto:#dbe6ff; --tenue:#5c6b8a;
+    --acento:#3d8bff; --alerta:#ff4d5e; --verde:#39e08a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  header .marca{font-weight:700;font-size:18px}
+  header .marca span{color:var(--acento)}
+  header .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  main{padding:26px;max-width:900px;margin:0 auto}
+  .vista{display:none}
+  .vista.activa{display:block}
+  .top-fila{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .top-fila h1{font-size:19px;margin:0}
+  .top-fila p{color:var(--tenue);font-size:13px;margin:4px 0 0}
+  button.primario{background:var(--acento);color:#05131f;border:none;padding:10px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+  button.primario:hover{filter:brightness(1.1)}
+  button.secundario{background:transparent;border:1px solid var(--borde);color:var(--tenue);padding:10px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+  button.secundario:hover{color:var(--texto);border-color:var(--acento)}
+  .salas{display:grid;gap:12px}
+  .sala{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .sala .nombre{font-weight:700;font-size:14px}
+  .sala .detalle{color:var(--tenue);font-size:12px;margin-top:3px}
+  .badge{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--borde);color:var(--tenue);text-transform:uppercase;letter-spacing:.04em}
+  .badge.publica{color:var(--verde);border-color:var(--verde)}
+  .badge.privada{color:var(--alerta);border-color:var(--alerta)}
+  .form-sala{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:16px;margin-bottom:16px;display:none;gap:10px;flex-wrap:wrap}
+  .form-sala.activo{display:flex}
+  .form-sala input[type=text]{flex:1;min-width:160px;background:var(--fondo);border:1px solid var(--borde);color:var(--texto);padding:9px 12px;border-radius:8px;font-size:13px}
+  .form-sala select{background:var(--fondo);border:1px solid var(--borde);color:var(--texto);padding:9px 12px;border-radius:8px;font-size:13px}
+  .form-sala label.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tenue)}
+  .layout-sala{display:grid;grid-template-columns:1fr 300px;gap:16px}
+  .panel-caja{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:16px}
+  .panel-caja h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--tenue)}
+  .jugador{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--borde);font-size:13px}
+  .jugador:last-child{border-bottom:none}
+  .jugador .punto{width:8px;height:8px;border-radius:50%;background:var(--verde);flex:none}
+  .jugador .tag{font-size:10px;color:var(--tenue);border:1px solid var(--borde);padding:1px 7px;border-radius:20px;margin-left:auto}
+  .chat{display:flex;flex-direction:column;height:360px}
+  .chat-log{flex:1;overflow-y:auto;font-size:13px;padding-right:4px}
+  .chat-msg{margin-bottom:8px;animation:entra .2s ease}
+  @keyframes entra{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .chat-msg b{color:var(--acento)}
+  .chat-msg .hora{color:var(--tenue);font-size:10px;margin-left:6px}
+  .chat-form{display:flex;gap:8px;margin-top:10px}
+  .chat-form input{flex:1;background:var(--fondo);border:1px solid var(--borde);color:var(--texto);padding:9px 12px;border-radius:8px;font-size:13px}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🕹️ <span>MIPIX</span> — lobby multijugador</div>
+  <div class="aviso">Demo estática del portafolio · sin servidor real, todo ocurre en tu navegador</div>
+</header>
+<main>
+  <div class="vista activa" id="vista-lobby">
+    <div class="top-fila">
+      <div>
+        <h1>Salas disponibles</h1>
+        <p>Elegí una sala para unirte o crea la tuya.</p>
+      </div>
+      <button class="primario" id="btn-mostrar-form">+ Crear sala</button>
+    </div>
+    <div class="form-sala" id="form-sala">
+      <input type="text" id="input-nombre" placeholder="Nombre de la sala">
+      <select id="input-max">
+        <option value="4">4 jugadores</option>
+        <option value="6" selected>6 jugadores</option>
+        <option value="8">8 jugadores</option>
+        <option value="16">16 jugadores</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="input-publica" checked> Pública</label>
+      <button class="primario" id="btn-crear-sala">Crear</button>
+    </div>
+    <div class="salas" id="lista-salas"></div>
+  </div>
+
+  <div class="vista" id="vista-sala">
+    <div class="top-fila">
+      <div>
+        <h1 id="sala-nombre">—</h1>
+        <p id="sala-detalle">—</p>
+      </div>
+      <button class="secundario" id="btn-salir-sala">← volver al lobby</button>
+    </div>
+    <div class="layout-sala">
+      <div class="panel-caja chat">
+        <h3>Chat de la sala</h3>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-form">
+          <input type="text" id="chat-input" placeholder="Escribí un mensaje...">
+          <button class="primario" id="btn-enviar-chat">Enviar</button>
+        </div>
+      </div>
+      <div class="panel-caja">
+        <h3>Jugadores conectados</h3>
+        <div id="lista-jugadores"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>Maqueta del portafolio, inspirada en MIPIX (backend real en Node + Express + Socket.io + MongoDB para un shooter multijugador; acá las salas y el chat viven solo en tu navegador, sin conexión ni base de datos).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+let salas = [
+  { id:1, nombre:'Zona Norte', host:'Nairo', max:8, jugadores:['Nairo','Kenia','Popo'], publica:true, codigo:null },
+  { id:2, nombre:'Solo amigos', host:'Vale', max:4, jugadores:['Vale','Memo'], publica:false, codigo:'7F2K' },
+  { id:3, nombre:'Modo rápido', host:'Diego', max:6, jugadores:['Diego','Ana','Luis','Sofi','Pato'], publica:true, codigo:null },
+  { id:4, nombre:'Torneo viernes', host:'Cami', max:10, jugadores:['Cami'], publica:false, codigo:'9QAL' },
+];
+let chats = {};
+let salaActualId = null;
+let siguienteId = 5;
+
+const listaSalas = document.getElementById('lista-salas');
+
+function pintarSalas(){
+  listaSalas.innerHTML = '';
+  salas.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'sala';
+    d.innerHTML = `
+      <div>
+        <div class="nombre">${s.nombre}</div>
+        <div class="detalle">Anfitrión: ${s.host} · ${s.jugadores.length}/${s.max} jugadores${s.codigo ? ' · código ' + s.codigo : ''}</div>
+      </div>
+      <span class="badge ${s.publica ? 'publica' : 'privada'}">${s.publica ? 'Pública' : 'Privada'}</span>
+      <button class="secundario" data-id="${s.id}">Unirse</button>
+    `;
+    d.querySelector('button').addEventListener('click', () => entrarASala(s.id));
+    listaSalas.appendChild(d);
+  });
+}
+
+function generarCodigo(){
+  const letras = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 4; i++) c += letras[Math.floor(Math.random()*letras.length)];
+  return c;
+}
+
+document.getElementById('btn-mostrar-form').addEventListener('click', () => {
+  document.getElementById('form-sala').classList.toggle('activo');
+});
+
+document.getElementById('btn-crear-sala').addEventListener('click', () => {
+  const nombre = document.getElementById('input-nombre').value.trim() || 'Sala sin nombre';
+  const max = parseInt(document.getElementById('input-max').value, 10);
+  const publica = document.getElementById('input-publica').checked;
+  const nueva = {
+    id: siguienteId++,
+    nombre,
+    host: 'Tú',
+    max,
+    jugadores: ['Tú'],
+    publica,
+    codigo: publica ? null : generarCodigo(),
+  };
+  salas.unshift(nueva);
+  document.getElementById('input-nombre').value = '';
+  document.getElementById('form-sala').classList.remove('activo');
+  pintarSalas();
+});
+
+function entrarASala(id){
+  const sala = salas.find(s => s.id === id);
+  if (!sala) return;
+  if (!sala.jugadores.includes('Tú') && sala.jugadores.length < sala.max) sala.jugadores.push('Tú');
+  salaActualId = id;
+  document.getElementById('vista-lobby').classList.remove('activa');
+  document.getElementById('vista-sala').classList.add('activa');
+  document.getElementById('sala-nombre').textContent = sala.nombre;
+  document.getElementById('sala-detalle').textContent = `Anfitrión: ${sala.host} · ${sala.jugadores.length}/${sala.max} jugadores${sala.codigo ? ' · código ' + sala.codigo : ''}`;
+  pintarJugadores(sala);
+  if (!chats[id]) chats[id] = [
+    { usuario: sala.host, mensaje: '¡Bienvenidos! Arrancamos cuando estemos listos.', hora: horaActual() },
+  ];
+  pintarChat(id);
+}
+
+function pintarJugadores(sala){
+  const cont = document.getElementById('lista-jugadores');
+  cont.innerHTML = '';
+  sala.jugadores.forEach(j => {
+    const d = document.createElement('div');
+    d.className = 'jugador';
+    d.innerHTML = `<span class="punto"></span><span>${j}</span>${j === sala.host ? '<span class="tag">host</span>' : ''}`;
+    cont.appendChild(d);
+  });
+}
+
+function horaActual(){
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function pintarChat(id){
+  const log = document.getElementById('chat-log');
+  log.innerHTML = '';
+  chats[id].forEach(m => {
+    const d = document.createElement('div');
+    d.className = 'chat-msg';
+    d.innerHTML = `<b>${m.usuario}:</b> ${m.mensaje}<span class="hora">${m.hora}</span>`;
+    log.appendChild(d);
+  });
+  log.scrollTop = log.scrollHeight;
+}
+
+document.getElementById('btn-enviar-chat').addEventListener('click', enviarMensaje);
+document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') enviarMensaje(); });
+
+function enviarMensaje(){
+  const input = document.getElementById('chat-input');
+  const texto = input.value.trim();
+  if (!texto || salaActualId === null) return;
+  chats[salaActualId].push({ usuario: 'Tú', mensaje: texto, hora: horaActual() });
+  input.value = '';
+  pintarChat(salaActualId);
+}
+
+document.getElementById('btn-salir-sala').addEventListener('click', () => {
+  document.getElementById('vista-sala').classList.remove('activa');
+  document.getElementById('vista-lobby').classList.add('activa');
+  salaActualId = null;
+  pintarSalas();
+});
+
+pintarSalas();
+</script>
+</body>
+</html>

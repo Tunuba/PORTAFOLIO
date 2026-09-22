@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIXELES — demo</title>
+<style>
+  :root{
+    --fondo:#150f1f; --panel:#1e1730; --borde:#332755; --texto:#f1ecff; --tenue:#9284b8;
+    --acento:#ff5fa8; --azul:#5fd0ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  header .marca{font-weight:700;font-size:18px}
+  header .marca span{color:var(--acento)}
+  header .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  .layout{display:grid;grid-template-columns:250px 1fr;min-height:calc(100vh - 53px)}
+  aside{border-right:1px solid var(--borde);padding:16px;overflow-y:auto}
+  aside h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--tenue);margin:6px 0 10px}
+  .sprite-item{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:8px;cursor:pointer;margin-bottom:6px;border:1px solid transparent;transition:.15s}
+  .sprite-item:hover{background:var(--panel);border-color:var(--borde)}
+  .sprite-item.activo{background:var(--panel);border-color:var(--acento)}
+  .sprite-item img{width:34px;height:34px;object-fit:contain;image-rendering:pixelated;background:#0e0a17;border-radius:6px;border:1px solid var(--borde)}
+  .sprite-item .nom{font-size:13px}
+  .sprite-item .cat{display:block;font-size:10px;color:var(--tenue)}
+  .visor{padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .marco{width:280px;height:280px;border:1px solid var(--borde);border-radius:16px;background:
+      radial-gradient(circle at 30% 20%, #241a38 0, transparent 60%),
+      repeating-linear-gradient(0deg, #1a1428 0 1px, transparent 1px 20px),
+      repeating-linear-gradient(90deg, #1a1428 0 1px, transparent 1px 20px);
+    display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .marco img{max-width:80%;max-height:80%;image-rendering:pixelated;filter:hue-rotate(0deg);transition:filter .3s;animation:aparecer .35s ease}
+  @keyframes aparecer{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+  .info{margin-top:18px;text-align:center}
+  .info b{font-size:16px}
+  .info .cat{color:var(--acento);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .stats{margin-top:14px;display:flex;gap:10px}
+  .stat{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:8px 14px;text-align:center;min-width:80px}
+  .stat b{display:block;font-size:14px}
+  .stat span{font-size:10px;color:var(--tenue);text-transform:uppercase}
+  .botones{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  button.generar{background:var(--acento);color:#3a0a24;border:none;padding:11px 18px;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer}
+  button.generar:hover{filter:brightness(1.08)}
+  button.paleta{background:transparent;border:1px solid var(--azul);color:var(--azul);padding:11px 16px;border-radius:9px;font-size:13px;cursor:pointer}
+  button.descargar{background:transparent;border:1px solid var(--borde);color:var(--tenue);padding:11px 16px;border-radius:9px;font-size:13px;cursor:pointer}
+  .semilla{margin-top:10px;font-size:11px;color:var(--tenue);font-family:ui-monospace,Consolas,monospace}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🟪 <span>PIXELES</span> — generador de sprites</div>
+  <div class="aviso">Demo estática del portafolio · sin motor real generando nada</div>
+</header>
+<div class="layout">
+  <aside>
+    <h3>Catálogo</h3>
+    <div id="lista"></div>
+    <h3>Cómo usar esta demo</h3>
+    <p style="font-size:12px;color:var(--tenue);line-height:1.5">Click en un sprite del catálogo para verlo grande, o usá "Generar otro" para que elija uno al azar.</p>
+  </aside>
+  <div class="visor">
+    <div class="marco"><img id="img-grande" src="" alt=""></div>
+    <div class="info">
+      <b id="nombre-sprite">—</b><br>
+      <span class="cat" id="cat-sprite">—</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="s-cuadros">—</b><span>Cuadros</span></div>
+      <div class="stat"><b id="s-res">—</b><span>Resolución</span></div>
+      <div class="stat"><b id="s-paleta">—</b><span>Paleta</span></div>
+    </div>
+    <div class="botones">
+      <button class="generar" id="btn-generar">🎲 Generar otro</button>
+      <button class="paleta" id="btn-paleta">🎨 Otra paleta</button>
+      <button class="descargar" id="btn-descargar">⬇ Descargar hoja (demo)</button>
+    </div>
+    <div class="semilla" id="semilla">semilla: —</div>
+  </div>
+</div>
+<footer>
+  <span>Maqueta del portafolio, inspirada en PIXELES (motor propio en Python + Pillow que genera pixel art animado por código; acá solo se elige entre unas hojas de muestra ya generadas).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const sprites = [
+  { archivo:'img/herrero.png', nombre:'Herrero', cat:'Personajes', cuadros:'8×9 anim.', res:'32×32 px' },
+  { archivo:'img/casa.png', nombre:'Casa de ladrillo', cat:'Edificios', cuadros:'1 estática', res:'64×64 px' },
+  { archivo:'img/cofre.png', nombre:'Cofre', cat:'Objetos', cuadros:'4 anim.', res:'24×24 px' },
+  { archivo:'img/gema.png', nombre:'Gema', cat:'Objetos', cuadros:'6 anim.', res:'16×16 px' },
+  { archivo:'img/coche.png', nombre:'Coche', cat:'Vehículos', cuadros:'4 anim.', res:'32×24 px' },
+  { archivo:'img/girasol.png', nombre:'Girasol', cat:'Naturaleza', cuadros:'3 anim.', res:'24×24 px' },
+];
+const paletas = ['Original','Otoño','Nocturna','Ártica','Neón'];
+let actual = 0;
+let paletaIdx = 0;
+
+const lista = document.getElementById('lista');
+sprites.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'sprite-item';
+  d.innerHTML = `<img src="${s.archivo}" alt=""><span><span class="nom">${s.nombre}</span><span class="cat">${s.cat}</span></span>`;
+  d.addEventListener('click', () => mostrar(i));
+  lista.appendChild(d);
+});
+
+const imgGrande = document.getElementById('img-grande');
+const nombreEl = document.getElementById('nombre-sprite');
+const catEl = document.getElementById('cat-sprite');
+const semillaEl = document.getElementById('semilla');
+
+function mostrar(i){
+  actual = i;
+  const s = sprites[i];
+  imgGrande.src = '';
+  requestAnimationFrame(() => { imgGrande.src = s.archivo; });
+  imgGrande.style.filter = filtroDePaleta(paletaIdx);
+  nombreEl.textContent = s.nombre;
+  catEl.textContent = s.cat;
+  document.getElementById('s-cuadros').textContent = s.cuadros;
+  document.getElementById('s-res').textContent = s.res;
+  document.getElementById('s-paleta').textContent = paletas[paletaIdx];
+  semillaEl.textContent = 'semilla: ' + Math.floor(Math.random()*900000 + 100000);
+  document.querySelectorAll('.sprite-item').forEach((el, idx) => el.classList.toggle('activo', idx === i));
+}
+
+function filtroDePaleta(idx){
+  const filtros = ['hue-rotate(0deg)','hue-rotate(60deg) saturate(1.3)','hue-rotate(220deg) brightness(.85)','hue-rotate(150deg) saturate(.7) brightness(1.1)','hue-rotate(300deg) saturate(1.5)'];
+  return filtros[idx % filtros.length];
+}
+
+document.getElementById('btn-generar').addEventListener('click', () => {
+  let siguiente = actual;
+  if (sprites.length > 1) { while (siguiente === actual) siguiente = Math.floor(Math.random()*sprites.length); }
+  mostrar(siguiente);
+});
+
+document.getElementById('btn-paleta').addEventListener('click', () => {
+  paletaIdx = (paletaIdx + 1) % paletas.length;
+  imgGrande.style.filter = filtroDePaleta(paletaIdx);
+  document.getElementById('s-paleta').textContent = paletas[paletaIdx];
+});
+
+const btnDescargar = document.getElementById('btn-descargar');
+btnDescargar.addEventListener('click', () => {
+  btnDescargar.textContent = '✓ (demo — no hay archivo real)';
+  setTimeout(() => btnDescargar.textContent = '⬇ Descargar hoja (demo)', 1600);
+});
+
+mostrar(0);
+</script>
+</body>
+</html>

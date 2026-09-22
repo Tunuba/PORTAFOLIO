@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LedKid Simulador — demo</title>
+<style>
+  :root{
+    --fondo:#0b0e14; --panel:#11151d; --borde:#232b3a; --texto:#e8ecf3; --tenue:#8994a8;
+    --acento:#ff9944; --verde:#00d4aa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  header .marca{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  header .marca span{color:var(--acento)}
+  header .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  .layout{display:grid;grid-template-columns:230px 1fr 260px;gap:0;height:calc(100vh - 53px)}
+  aside{border-right:1px solid var(--borde);padding:14px;overflow-y:auto}
+  aside h3{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--tenue);margin:14px 0 8px}
+  .pieza{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:grab;margin-bottom:6px;border:1px solid transparent;transition:.15s}
+  .pieza:hover{background:var(--panel);border-color:var(--borde)}
+  .dot{width:14px;height:14px;border-radius:4px;flex:none}
+  main{position:relative;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:
+    radial-gradient(circle at 20% 20%, #131826 0, transparent 60%),
+    repeating-linear-gradient(0deg, #0d111a 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, #0d111a 0 1px, transparent 1px 26px);
+  }
+  .board{width:560px;min-height:360px;background:#151b27;border:1px solid var(--borde);border-radius:14px;position:relative;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .board .titulo{font-size:12px;color:var(--tenue);margin-bottom:14px}
+  .zona-piezas{display:flex;flex-wrap:wrap;gap:14px;min-height:220px;align-content:flex-start}
+  .colocada{width:74px;display:flex;flex-direction:column;align-items:center;gap:6px;animation:aparecer .35s ease}
+  @keyframes aparecer{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:none}}
+  .colocada .icono{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .colocada span{font-size:10px;color:var(--tenue);text-align:center}
+  .colocada.encendida .icono{box-shadow:0 0 22px 6px currentColor}
+  .vacio{color:var(--tenue);font-size:13px;text-align:center;margin:auto}
+  .barra{display:flex;gap:10px;margin-top:18px}
+  button.correr{background:var(--verde);color:#04241d;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px}
+  button.correr:hover{filter:brightness(1.08)}
+  button.limpiar{background:transparent;border:1px solid var(--borde);color:var(--tenue);padding:10px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+  .consola{border-left:1px solid var(--borde);padding:14px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#9fe6c8;overflow-y:auto}
+  .consola h3{font-size:11px;text-transform:uppercase;color:var(--tenue);letter-spacing:.08em;margin:0 0 10px;font-family:system-ui}
+  .consola .linea{margin-bottom:4px;opacity:0;animation:entra .3s forwards}
+  @keyframes entra{to{opacity:1}}
+  .consola .linea.gris{color:var(--tenue)}
+  footer{position:fixed;bottom:0;left:0;right:0;background:#0a0d13;border-top:1px solid var(--borde);padding:8px 20px;font-size:11px;color:var(--tenue);display:flex;justify-content:space-between}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">💡 Led<span>Kid</span> — Simulador</div>
+  <div class="aviso">Demo estática del portafolio · sin cuenta ni datos reales</div>
+</header>
+<div class="layout">
+  <aside>
+    <h3>Componentes</h3>
+    <div class="pieza" data-id="led" data-color="#ffd700" data-icon="●">
+      <div class="dot" style="background:#ffd700"></div> LED
+    </div>
+    <div class="pieza" data-id="resistencia" data-color="#ff9944" data-icon="Ω">
+      <div class="dot" style="background:#ff9944"></div> Resistencia
+    </div>
+    <div class="pieza" data-id="buzzer-pasivo" data-color="#00d4aa" data-icon="♪">
+      <div class="dot" style="background:#00d4aa"></div> Buzzer pasivo
+    </div>
+    <div class="pieza" data-id="buzzer-activo" data-color="#44bbff" data-icon="♫">
+      <div class="dot" style="background:#44bbff"></div> Buzzer activo
+    </div>
+    <div class="pieza" data-id="oled" data-color="#00e5ff" data-icon="▭">
+      <div class="dot" style="background:#00e5ff"></div> Pantalla OLED
+    </div>
+    <div class="pieza" data-id="matrix" data-color="#00ffa3" data-icon="▦">
+      <div class="dot" style="background:#00ffa3"></div> Matriz RGB 8×8
+    </div>
+    <div class="pieza" data-id="bateria" data-color="#ff5577" data-icon="⎓">
+      <div class="dot" style="background:#ff5577"></div> Batería AA
+    </div>
+    <div class="pieza" data-id="esp32" data-color="#00d4aa" data-icon="◱">
+      <div class="dot" style="background:#00d4aa"></div> ESP32
+    </div>
+    <h3>Cómo usar esta demo</h3>
+    <p style="font-size:12px;color:var(--tenue);line-height:1.5">Click en una pieza para ponerla en el protoboard. Después dale a Correr programa.</p>
+  </aside>
+
+  <main>
+    <div class="board">
+      <div class="titulo">Protoboard — circuito 1</div>
+      <div class="zona-piezas" id="zona">
+        <div class="vacio" id="vacio-msg">Click una pieza de la izquierda para armar el circuito</div>
+      </div>
+      <div class="barra">
+        <button class="correr" id="btn-correr">▶ Correr programa</button>
+        <button class="limpiar" id="btn-limpiar">Vaciar protoboard</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="consola">
+    <h3>Consola</h3>
+    <div id="log"></div>
+  </div>
+</div>
+<footer>
+  <span>Esto es una maqueta del portafolio, no el producto real (ese corre con cuenta, backend y base de datos propia).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+const zona = document.getElementById('zona');
+const vacio = document.getElementById('vacio-msg');
+const log = document.getElementById('log');
+let colocadas = [];
+
+function linea(txt, gris){
+  const d = document.createElement('div');
+  d.className = 'linea' + (gris ? ' gris' : '');
+  d.style.animationDelay = (log.children.length * 90) + 'ms';
+  d.textContent = txt;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+document.querySelectorAll('.pieza').forEach(p => {
+  p.addEventListener('click', () => {
+    if (vacio) vacio.remove();
+    const id = p.dataset.id, color = p.dataset.color, icon = p.dataset.icon;
+    const nombre = p.textContent.trim();
+    const el = document.createElement('div');
+    el.className = 'colocada';
+    el.style.color = color;
+    el.innerHTML = `<div class="icono" style="background:${color}22;border:1px solid ${color}">${icon}</div><span>${nombre}</span>`;
+    zona.appendChild(el);
+    colocadas.push({id, nombre, el, color});
+    linea('+ ' + nombre + ' agregado al protoboard', true);
+  });
+});
+
+document.getElementById('btn-limpiar').addEventListener('click', () => {
+  colocadas.forEach(c => c.el.remove());
+  colocadas = [];
+  log.innerHTML = '';
+  if (!document.getElementById('vacio-msg')) {
+    const v = document.createElement('div');
+    v.className = 'vacio'; v.id = 'vacio-msg';
+    v.textContent = 'Click una pieza de la izquierda para armar el circuito';
+    zona.appendChild(v);
+  }
+});
+
+document.getElementById('btn-correr').addEventListener('click', () => {
+  log.innerHTML = '';
+  if (colocadas.length === 0) { linea('No hay piezas en el protoboard todavía', true); return; }
+  linea('Compilando programa...', true);
+  linea('Subiendo a ESP32 (simulado)...', true);
+  setTimeout(() => {
+    linea('OK — programa corriendo');
+    colocadas.forEach((c, i) => {
+      setTimeout(() => {
+        c.el.classList.add('encendida');
+        if (c.id === 'led') linea('digitalWrite(LED, HIGH) → LED encendido');
+        else if (c.id.includes('buzzer')) linea('tone(BUZZER, 440) → sonando');
+        else if (c.id === 'oled') linea('oled.print("Hola LedKid") → texto en pantalla');
+        else if (c.id === 'matrix') linea('matriz.dibujar(carita) → patrón mostrado');
+        else if (c.id === 'esp32') linea('setup() OK — loop() corriendo');
+        else linea(c.nombre + ' activo');
+      }, i * 400);
+    });
+  }, 700);
+});
+</script>
+</body>
+</html>

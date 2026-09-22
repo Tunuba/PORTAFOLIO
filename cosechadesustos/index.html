@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosecha de Sustos — demo</title>
+<style>
+  :root{
+    --fondo:#1a1226; --panel:#241a35; --borde:#3d2c54; --texto:#f4ecff; --tenue:#a394bd;
+    --acento:#ff9a3d; --dorado:#ffd35c; --rojo:#ff5b6e; --azul:#5cb8ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:8px}
+  .marca span{color:var(--acento)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  main{max-width:920px;margin:0 auto;padding:24px 20px 100px;display:grid;grid-template-columns:1fr 300px;gap:22px}
+  @media (max-width:760px){ main{grid-template-columns:1fr} }
+  .col-izq{}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+  .fase{font-size:13px;color:var(--tenue)}
+  .fase b{color:var(--acento)}
+  .reloj{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:8px 18px;font-family:ui-monospace,Consolas,monospace;font-size:22px;font-weight:800;color:var(--dorado);min-width:70px;text-align:center}
+  .tablero{background:var(--panel);border:1px solid var(--borde);border-radius:16px;padding:14px;display:flex;justify-content:center}
+  .tablero svg{max-width:100%;height:auto}
+  .poste{fill:#140d1f;stroke:var(--borde);stroke-width:2;cursor:pointer;transition:.15s}
+  .poste:hover{stroke:var(--acento)}
+  .poste.sel{fill:var(--acento);stroke:var(--acento)}
+  .poste.bloqueado{cursor:not-allowed}
+  .fantasma{stroke:var(--azul);stroke-width:3;stroke-dasharray:6 6;opacity:.55;fill:none}
+  .cuerda{stroke:var(--acento);stroke-width:5;fill:none;stroke-linecap:round}
+  .cuerda.dorado{stroke:var(--dorado)}
+  .cuerda.rojo{stroke:var(--rojo)}
+  .cuerda.azul{stroke:var(--azul);stroke-dasharray:6 6}
+  .panel-info{background:var(--panel);border:1px solid var(--borde);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px;height:fit-content}
+  .panel-info h2{margin:0;font-size:15px}
+  .panel-info p{margin:0;font-size:12px;color:var(--tenue);line-height:1.6}
+  .leyenda{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--tenue)}
+  .leyenda span{display:inline-flex;align-items:center;gap:6px}
+  .leyenda i{width:16px;height:4px;border-radius:2px;display:inline-block}
+  button.jugar{background:var(--acento);color:#2a1300;border:none;padding:11px 18px;border-radius:9px;font-weight:800;cursor:pointer;font-size:13px}
+  button.jugar:hover{filter:brightness(1.08)}
+  button.terminar{background:transparent;border:1px solid var(--borde);color:var(--tenue);padding:10px 14px;border-radius:9px;cursor:pointer;font-size:12px}
+  .resultado-caja{display:none;border-radius:12px;padding:12px 14px;font-weight:800;text-align:center;font-size:14px}
+  .resultado-caja.dorado{background:#3a2c0f;color:var(--dorado);border:1px solid var(--dorado);display:block}
+  .resultado-caja.rojo{background:#3a1420;color:var(--rojo);border:1px solid var(--rojo);display:block}
+  .resultado-caja.azul{background:#12283a;color:var(--azul);border:1px solid var(--azul);display:block}
+  footer{position:fixed;bottom:0;left:0;right:0;background:#150e20;border-top:1px solid var(--borde);padding:10px 20px;font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;gap:10px}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">🎃 Cosecha de<span>Sustos</span></div>
+  <div class="aviso">Demo estática del portafolio · sin cuenta ni datos reales</div>
+</header>
+<main>
+  <div class="col-izq">
+    <div class="top">
+      <div class="fase" id="fase-txt">Fase: <b>esperando</b> · dale a "Empezar ronda"</div>
+      <div class="reloj" id="reloj">--</div>
+    </div>
+    <div class="tablero">
+      <svg viewBox="0 0 240 320" width="320">
+        <g id="fantasmas"></g>
+        <g id="cuerdas"></g>
+        <g id="postes"></g>
+      </svg>
+    </div>
+  </div>
+  <div class="panel-info">
+    <h2>La pose pedida: El Robot</h2>
+    <p>Tendé cuerdas entre postes para armar la figura punteada en azul. Tocar una cuerda ya puesta la corta. Al sonar la campana, los cuervos huyen según lo que quedó bien tendido.</p>
+    <button class="jugar" id="btn-jugar">▶ Empezar ronda</button>
+    <button class="terminar" id="btn-terminar" style="display:none">Terminar tendido ahora</button>
+    <div class="resultado-caja" id="resultado"></div>
+    <div class="leyenda">
+      <span><i style="background:var(--dorado)"></i> cuerda correcta</span>
+      <span><i style="background:var(--rojo)"></i> cuerda de más</span>
+      <span><i style="background:var(--azul)"></i> te faltó tender</span>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>Maqueta del portafolio, inspirada en el proyecto real: un torneo de granjeros en Roblox donde se tienden cuerdas contra reloj para espantar cuervos.</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+// grid 3 columnas x 4 filas
+const POS = [];
+for (let f=0; f<4; f++) for (let c=0; c<3; c++) POS.push({x:40+c*80, y:40+f*80});
+
+// pose "El Robot": brazos (3-5), torso (4-7), piernas (7-9) y (7-11)
+const OBJETIVO = [[3,5],[4,7],[7,9],[7,11]].map(par => par.slice().sort((a,b)=>a-b));
+function claveEdge(a,b){ return a<b ? a+'-'+b : b+'-'+a; }
+const OBJETIVO_SET = new Set(OBJETIVO.map(([a,b]) => claveEdge(a,b)));
+
+let seleccionado = null;
+let cuerdas = new Map(); // clave -> [a,b]
+let fase = 'espera'; // espera | mira | tender | resultado
+let cronoId = null, restante = 0;
+
+const svgNS = 'http://www.w3.org/2000/svg';
+const gPostes = document.getElementById('postes');
+const gCuerdas = document.getElementById('cuerdas');
+const gFantasmas = document.getElementById('fantasmas');
+
+function pintarFantasmas(){
+  gFantasmas.innerHTML = '';
+  OBJETIVO.forEach(([a,b]) => {
+    const l = document.createElementNS(svgNS,'line');
+    l.setAttribute('class','fantasma');
+    l.setAttribute('x1', POS[a].x); l.setAttribute('y1', POS[a].y);
+    l.setAttribute('x2', POS[b].x); l.setAttribute('y2', POS[b].y);
+    gFantasmas.appendChild(l);
+  });
+}
+
+function pintarPostes(){
+  gPostes.innerHTML = '';
+  POS.forEach((p, i) => {
+    const c = document.createElementNS(svgNS,'circle');
+    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 11);
+    c.setAttribute('class', 'poste' + (seleccionado === i ? ' sel' : '') + (fase !== 'tender' ? ' bloqueado' : ''));
+    c.addEventListener('click', () => clickPoste(i));
+    gPostes.appendChild(c);
+  });
+}
+
+function pintarCuerdas(coloreado){
+  gCuerdas.innerHTML = '';
+  cuerdas.forEach(([a,b], clave) => {
+    const l = document.createElementNS(svgNS,'line');
+    let cls = 'cuerda';
+    if (coloreado) cls += OBJETIVO_SET.has(clave) ? ' dorado' : ' rojo';
+    l.setAttribute('class', cls);
+    l.setAttribute('x1', POS[a].x); l.setAttribute('y1', POS[a].y);
+    l.setAttribute('x2', POS[b].x); l.setAttribute('y2', POS[b].y);
+    gCuerdas.appendChild(l);
+  });
+  if (coloreado) {
+    // faltantes: en objetivo pero no tendidas
+    OBJETIVO.forEach(([a,b]) => {
+      const clave = claveEdge(a,b);
+      if (!cuerdas.has(clave)) {
+        const l = document.createElementNS(svgNS,'line');
+        l.setAttribute('class','cuerda azul');
+        l.setAttribute('x1', POS[a].x); l.setAttribute('y1', POS[a].y);
+        l.setAttribute('x2', POS[b].x); l.setAttribute('y2', POS[b].y);
+        gCuerdas.appendChild(l);
+      }
+    });
+  }
+}
+
+function clickPoste(i){
+  if (fase !== 'tender') return;
+  if (seleccionado === null) { seleccionado = i; pintarPostes(); return; }
+  if (seleccionado === i) { seleccionado = null; pintarPostes(); return; }
+  const clave = claveEdge(seleccionado, i);
+  if (cuerdas.has(clave)) cuerdas.delete(clave);
+  else cuerdas.set(clave, [seleccionado, i]);
+  seleccionado = null;
+  pintarPostes();
+  pintarCuerdas(false);
+}
+
+function formatoSeg(s){ return s + 's'; }
+
+function iniciarRonda(){
+  cuerdas = new Map(); seleccionado = null;
+  document.getElementById('resultado').className = 'resultado-caja';
+  document.getElementById('resultado').textContent = '';
+  document.getElementById('btn-jugar').style.display = 'none';
+  document.getElementById('btn-terminar').style.display = 'inline-block';
+  fase = 'mira'; restante = 4;
+  document.getElementById('fase-txt').innerHTML = 'Fase: <b>mirá la pose</b> · el tablero está bloqueado';
+  document.getElementById('reloj').textContent = formatoSeg(restante);
+  pintarPostes(); pintarCuerdas(false);
+  clearInterval(cronoId);
+  cronoId = setInterval(() => {
+    restante--;
+    document.getElementById('reloj').textContent = formatoSeg(Math.max(restante,0));
+    if (restante <= 0) {
+      if (fase === 'mira') { empezarTendido(); }
+      else if (fase === 'tender') { terminarRonda(); }
+    }
+  }, 1000);
+}
+
+function empezarTendido(){
+  fase = 'tender'; restante = 15;
+  document.getElementById('fase-txt').innerHTML = 'Fase: <b>tendé las cuerdas</b> · click en dos postes para unirlos';
+  document.getElementById('reloj').textContent = formatoSeg(restante);
+  pintarPostes();
+}
+
+function terminarRonda(){
+  clearInterval(cronoId);
+  fase = 'resultado';
+  seleccionado = null;
+  document.getElementById('reloj').textContent = '🔔';
+  pintarPostes();
+  pintarCuerdas(true);
+
+  let aciertos = 0, sobrantes = 0;
+  cuerdas.forEach((par, clave) => { if (OBJETIVO_SET.has(clave)) aciertos++; else sobrantes++; });
+  const faltantes = OBJETIVO.length - aciertos;
+
+  const caja = document.getElementById('resultado');
+  if (aciertos === OBJETIVO.length && sobrantes === 0) {
+    caja.className = 'resultado-caja dorado';
+    caja.textContent = '¡Perfecto! Los 4 cuervos huyeron de tu parcela.';
+  } else if (aciertos === 0) {
+    caja.className = 'resultado-caja rojo';
+    caja.textContent = 'Ningún cuervo se asustó — la figura no se pareció en nada.';
+  } else {
+    caja.className = 'resultado-caja azul';
+    caja.textContent = aciertos + ' de ' + OBJETIVO.length + ' cuervos huyeron' + (sobrantes ? ' (' + sobrantes + ' cuerda(s) de más)' : (faltantes ? ' (te faltó ' + faltantes + ' cuerda(s))' : '')) + '.';
+  }
+
+  document.getElementById('fase-txt').innerHTML = 'Fase: <b>resultado</b>';
+  document.getElementById('btn-terminar').style.display = 'none';
+  document.getElementById('btn-jugar').style.display = 'inline-block';
+  document.getElementById('btn-jugar').textContent = '↻ Jugar otra ronda';
+}
+
+document.getElementById('btn-jugar').addEventListener('click', iniciarRonda);
+document.getElementById('btn-terminar').addEventListener('click', terminarRonda);
+
+pintarFantasmas();
+pintarPostes();
+</script>
+</body>
+</html>

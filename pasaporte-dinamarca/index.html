@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasaporte Cultural — Reino de Dinamarca | Grupo 4</title>
+<meta name="description" content="Pasaporte cultural del Reino de Dinamarca: las seis categorías sociales. Universidad del Istmo, Claves del Pensamiento 1, Grupo 4.">
+<style>
+  :root{
+    --red:#C8102E; --red-deep:#9E0A22; --red-soft:#F8E5E8;
+    --ink:#14161B; --ink-2:#3B4049; --muted:#7A818D;
+    --paper:#F7F5F2; --white:#fff; --line:#E3DFD9;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: "Segoe UI Variable Display", "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+    --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+    --ease: cubic-bezier(.22,.68,.28,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%;-webkit-text-size-adjust:100%}
+  body{height:100%;background:#0E0F12;font-family:var(--sans);color:var(--ink);overflow:hidden;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+
+  /* 100dvh evita el salto por la barra del navegador en el celular */
+  #deck{position:fixed;left:0;top:0;width:100%;height:100%;height:100dvh;overflow:hidden}
+  .slide{
+    position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    /* el padding inferior es zona segura: nada choca con las bolitas ni con los botones */
+    padding:clamp(20px,3.4vw,54px) clamp(22px,5vw,88px) clamp(58px,7.4vh,86px);
+    background:var(--paper);
+    z-index:0;opacity:0;visibility:hidden;transform:scale(.985);pointer-events:none;
+    transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s .5s;
+    overflow:hidden;
+  }
+  .slide.active{
+    opacity:1;visibility:visible;transform:none;pointer-events:auto;
+    transition:opacity .5s var(--ease),transform .5s var(--ease),visibility 0s 0s;
+  }
+  .slide.dark{background:var(--red);color:#fff}
+  .slide.ink{background:var(--ink);color:#fff}
+
+  .r{opacity:0;transform:translateY(20px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+  .slide.active .r{opacity:1;transform:none;transition-delay:calc(var(--i,0)*75ms + 100ms)}
+  @media (prefers-reduced-motion:reduce){
+    .slide,.slide.active,.r,.slide.active .r{transition-duration:.01ms!important;transform:none!important}
+  }
+
+  .eyebrow{font-size:clamp(9px,.76vw,11.5px);letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--red);display:flex;align-items:center;gap:11px;margin-bottom:clamp(8px,1.1vw,15px)}
+  .dark .eyebrow,.ink .eyebrow{color:rgba(255,255,255,.72)}
+  .eyebrow::before{content:"";width:clamp(16px,2.2vw,36px);height:2px;background:currentColor;opacity:.55}
+
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(30px,5.4vw,80px);line-height:.96;letter-spacing:-.025em}
+  h2{font-family:var(--serif);font-weight:400;font-size:clamp(23px,3.3vw,50px);line-height:1.05;letter-spacing:-.02em;max-width:22ch}
+  h3{font-size:clamp(12.5px,1.08vw,16px);font-weight:700;letter-spacing:-.01em}
+  p{font-size:clamp(12px,1vw,15.5px);line-height:1.56;color:var(--ink-2)}
+  .dark p,.ink p{color:rgba(255,255,255,.83)}
+  .sub{color:var(--muted);font-size:clamp(10px,.86vw,12.5px);line-height:1.5}
+  .dark .sub,.ink .sub{color:rgba(255,255,255,.6)}
+  .hl{color:var(--red)}
+  .dark .hl,.ink .hl{color:#fff}
+  .cite{font-size:clamp(9.5px,.8vw,11.5px);color:var(--muted);font-style:italic}
+  .dark .cite,.ink .cite{color:rgba(255,255,255,.52)}
+
+  .head{margin-bottom:clamp(10px,1.5vw,24px);flex-shrink:0}
+  .cols{display:grid;gap:clamp(10px,1.15vw,19px)}
+  .c2{grid-template-columns:repeat(2,1fr)} .c3{grid-template-columns:repeat(3,1fr)} .c4{grid-template-columns:repeat(4,1fr)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.8vw,48px);align-items:center}
+
+  .fld{border-top:1px solid var(--line);padding:clamp(7px,.9vw,13px) 0}
+  .fld b{display:block;font-size:clamp(9px,.76vw,11px);letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:4px;font-weight:700}
+  .fld p{font-size:clamp(11.5px,.98vw,15px)}
+  .ink .fld,.dark .fld{border-color:rgba(255,255,255,.16)}
+  .ink .fld b,.dark .fld b{color:rgba(255,255,255,.74)}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:13px;padding:clamp(11px,1.3vw,22px);transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s var(--ease)}
+  .card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(20,22,27,.10);border-color:#CFC9C1}
+  .card .num{font-family:var(--serif);font-size:clamp(20px,2.3vw,36px);color:var(--red);line-height:1;margin-bottom:7px}
+  .card h3{margin-bottom:6px}
+  .card p{font-size:clamp(11px,.92vw,13.5px);line-height:1.5}
+  .card.accent{background:var(--ink);border-color:var(--ink)}
+  .card.accent h3,.card.accent .num{color:#fff}
+  .card.accent p{color:rgba(255,255,255,.76)}
+
+  .flag-bg{position:absolute;inset:0;pointer-events:none;opacity:.1}
+  .flag-bg span{position:absolute;background:#fff}
+  .cross-v{left:26%;top:-10%;width:clamp(36px,4.6vw,92px);height:120%}
+  .cross-h{top:44%;left:-10%;height:clamp(36px,4.6vw,92px);width:120%}
+
+  /* ═══ 1 · boleto ═══ */
+  #s0{background:var(--red);justify-content:center;gap:clamp(14px,2vw,30px)}
+  #s0 .wave{position:absolute;inset:0;opacity:.12;background:repeating-linear-gradient(115deg,rgba(255,255,255,.4) 0 2px,transparent 2px 26px);animation:drift 24s linear infinite}
+  @keyframes drift{to{background-position:520px 0}}
+
+  /* velo inferior: asegura que los créditos se lean sobre cualquier gráfico */
+  #s0::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;z-index:0;pointer-events:none;
+    background:linear-gradient(to top, rgba(120,6,26,.62), rgba(120,6,26,.28) 45%, transparent)}
+
+  /* ruta de vuelo animada */
+  .sky{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  .sky .route-bg{fill:none;stroke:#fff;stroke-opacity:.14;stroke-width:2;stroke-dasharray:7 11;stroke-linecap:round}
+  .sky .route{fill:none;stroke:#fff;stroke-opacity:.6;stroke-width:2.6;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 3.4s var(--ease) .35s}
+  .slide.active .sky .route{stroke-dashoffset:0}
+  .sky .node{fill:#fff;fill-opacity:.9}
+  .sky .ping{fill:none;stroke:#fff;stroke-width:2}
+  /* el avión vive solo en la portada, recorriendo su ruta */
+  .sky .plane{opacity:0;transition:opacity .7s ease .7s}
+  .slide.active .sky .plane{opacity:1}
+  .sky .plane path{fill:#fff}
+  .sky .halo{fill:#fff;fill-opacity:.15}
+
+  /* sello de pasaporte */
+  .stamp{
+    position:absolute;top:clamp(54px,7.6vw,104px);right:clamp(22px,4.6vw,78px);z-index:2;
+    width:clamp(92px,10vw,150px);aspect-ratio:1;border:3px double rgba(255,255,255,.75);border-radius:50%;
+    display:grid;place-items:center;text-align:center;color:rgba(255,255,255,.9);
+    font-size:clamp(7px,.66vw,9.5px);letter-spacing:.16em;text-transform:uppercase;font-weight:700;line-height:1.75;padding:10px;
+    opacity:0;transform:rotate(-38deg) scale(2.6);
+  }
+  .stamp b{display:block;font-family:var(--serif);font-size:clamp(12px,1.4vw,21px);letter-spacing:.02em;text-transform:none;font-weight:400;margin:3px 0}
+  .slide.active .stamp{animation:slam .75s cubic-bezier(.18,1.5,.4,1) 2.1s both}
+  @keyframes slam{
+    0%{opacity:0;transform:rotate(-38deg) scale(2.6)}
+    55%{opacity:1;transform:rotate(-10deg) scale(.93)}
+    100%{opacity:1;transform:rotate(-14deg) scale(1)}
+  }
+  .stamp::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,255,255,.6);opacity:0}
+  .slide.active .stamp::after{animation:shock .8s ease-out 2.5s both}
+  @keyframes shock{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
+
+  .bp{position:relative;z-index:1;display:grid;grid-template-columns:1fr clamp(124px,14.5vw,190px);background:#fff;border-radius:16px;color:var(--ink);width:100%;max-width:1000px;margin:0 auto;box-shadow:0 26px 70px rgba(0,0,0,.3)}
+  .bp::before,.bp::after{content:"";position:absolute;right:clamp(124px,14.5vw,190px);width:18px;height:18px;border-radius:50%;background:var(--red);transform:translateX(50%)}
+  .bp::before{top:-9px} .bp::after{bottom:-9px}
+  .bp-main{padding:clamp(13px,1.7vw,28px)}
+  .bp-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:clamp(10px,1.4vw,18px)}
+  .bp-brand{display:flex;align-items:center;gap:10px;font-size:clamp(8.5px,.76vw,11px);letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--red)}
+  .bp-brand svg{width:23px;border-radius:2px;flex-shrink:0}
+  .bp-tag{font-size:clamp(8px,.7vw,10px);letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+  .bp-route{display:flex;align-items:center;gap:clamp(10px,1.6vw,26px);margin-bottom:clamp(10px,1.4vw,18px)}
+  .bp-city b{font-family:var(--serif);font-size:clamp(24px,3vw,46px);line-height:1;display:block}
+  .bp-city span{font-size:clamp(8.5px,.74vw,10.5px);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block;margin-top:4px}
+  .bp-arrow{flex:1;position:relative;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+  .bp-plane{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:0 11px;display:flex;align-items:center}
+  .bp-plane svg{width:clamp(15px,1.5vw,22px);height:auto;fill:var(--red);display:block}
+  .bp-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(7px,1vw,15px)}
+  .bp-f b{display:block;font-size:clamp(7.5px,.66vw,9.4px);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-weight:700}
+  .bp-f span{font-size:clamp(11px,.96vw,14.5px);font-weight:600;display:block}
+  .bp-stub{border-left:2px dashed var(--line);padding:clamp(13px,1.6vw,24px) clamp(9px,1.1vw,16px);display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:12px;text-align:center;background:var(--paper);border-radius:0 16px 16px 0}
+  .bp-stub .big{font-family:var(--serif);font-size:clamp(20px,2.3vw,35px);line-height:1}
+  .bp-stub .lbl{font-size:clamp(7.5px,.66vw,9.4px);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .bp-code{width:100%;height:clamp(34px,3.8vw,56px);background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 9px,var(--ink) 9px 12px,transparent 12px 14px,var(--ink) 14px 15px,transparent 15px 18px)}
+
+  .slide.active .bp{animation:bpIn .95s var(--ease) .1s both}
+  @keyframes bpIn{from{opacity:0;transform:translateY(48px) scale(.955)}to{opacity:1;transform:none}}
+  .slide.active .bp-code{animation:codeIn .9s var(--ease) 1s both}
+  @keyframes codeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+  .slide.active .bp-plane svg{animation:taxi 1s var(--ease) .75s both}
+  @keyframes taxi{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+
+  .credits{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:clamp(14px,2.4vw,40px);align-items:end;max-width:1000px;margin:0 auto;width:100%}
+  .team{display:flex;gap:clamp(8px,1vw,17px);flex-wrap:wrap}
+  .team div{font-size:clamp(9.5px,.84vw,12.5px);color:rgba(255,255,255,.9);border-left:2px solid rgba(255,255,255,.45);padding-left:9px;line-height:1.45}
+  .destino{text-align:right}
+  .destino .lbl{font-size:clamp(8px,.72vw,10px);letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.6);margin-bottom:6px}
+  .destino .big{font-family:var(--serif);font-size:clamp(20px,2.4vw,38px);line-height:1.05;color:#fff}
+
+  /* índice compacto de categorías */
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:clamp(8px,1.1vw,14px)}
+  .chips button{
+    display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;
+    border-radius:99px;padding:7px 14px;font-family:inherit;font-size:clamp(10px,.86vw,12.5px);
+    font-weight:700;color:var(--ink-2);cursor:pointer;transition:all .3s var(--ease);
+  }
+  .chips button:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px)}
+  .chips button i{font-style:normal;font-family:var(--serif);color:var(--red);font-weight:400}
+  .chips button.int{background:var(--ink);border-color:var(--ink);color:#fff}
+  .chips button.int i{color:rgba(255,255,255,.65)}
+  .chips button.int:hover{background:var(--red);border-color:var(--red);color:#fff}
+  .chips button.int:hover i{color:#fff}
+
+  /* ═══ 2 · índice de categorías ═══ */
+  .catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,.9vw,14px)}
+  .cat{position:relative;background:#fff;border:1px solid var(--line);border-radius:12px;padding:clamp(10px,1.15vw,18px);cursor:pointer;text-align:left;font-family:inherit;transition:all .35s var(--ease);overflow:hidden}
+  .cat:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(20,22,27,.12);border-color:var(--red)}
+  .cat .n{font-family:var(--serif);font-size:clamp(16px,1.8vw,27px);color:var(--line);line-height:1;position:absolute;top:9px;right:13px;transition:color .35s}
+  .cat:hover .n{color:var(--red)}
+  .cat b{display:block;font-size:clamp(12.5px,1.15vw,17px);margin-bottom:4px;letter-spacing:-.01em}
+  .cat span{font-size:clamp(9.5px,.8vw,11.5px);color:var(--muted);line-height:1.42;display:block}
+  .cat.int{background:var(--ink);border-color:var(--ink)}
+  .cat.int b{color:#fff} .cat.int span{color:rgba(255,255,255,.68)} .cat.int .n{color:rgba(255,255,255,.22)}
+  .cat.int:hover{border-color:var(--red)} .cat.int:hover .n{color:var(--red)}
+  .rank{display:inline-block;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:99px;margin-bottom:7px}
+  .rank.ext{background:var(--red-soft);color:var(--red)}
+  .rank.inn{background:var(--red);color:#fff}
+
+  /* ═══ tribunales ═══ */
+  .pyramid{display:flex;flex-direction:column;align-items:center;gap:7px}
+  .level{width:100%;border-radius:10px;padding:clamp(7px,.85vw,13px) clamp(11px,1.3vw,20px);background:#fff;border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all .35s var(--ease)}
+  .level .lv-name b{font-size:clamp(11px,.98vw,15px);display:block}
+  .level .lv-name em{font-style:normal;font-size:clamp(8.5px,.74vw,10.5px);color:var(--muted);letter-spacing:.05em}
+  .level .lv-count{font-family:var(--serif);font-size:clamp(16px,1.7vw,27px);color:var(--red);line-height:1}
+  .lv1{width:54%}.lv2{width:76%}.lv3{width:97%}
+  .level:hover{border-color:#C9C2BA;transform:translateY(-2px)}
+  .level.on{background:var(--red);border-color:var(--red);box-shadow:0 12px 30px rgba(200,16,46,.25)}
+  .level.on b,.level.on .lv-count{color:#fff} .level.on em{color:rgba(255,255,255,.72)}
+  .court-detail{margin-top:clamp(9px,1.1vw,16px);border-left:3px solid var(--red);padding-left:clamp(10px,1vw,15px);min-height:58px}
+  .court-detail b{display:block;font-size:clamp(11px,.94vw,13.5px);margin-bottom:4px}
+  .court-detail p{font-size:clamp(10.5px,.88vw,13px)}
+  .fade-swap{animation:swapIn .4s var(--ease)}
+  @keyframes swapIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+
+  /* ═══ línea de tiempo ═══ */
+  .tl{position:relative;margin:clamp(10px,1.3vw,20px) 0 clamp(9px,1.1vw,16px)}
+  .tl-line{position:absolute;left:0;right:0;top:9px;height:2px;background:var(--line)}
+  .tl-line i{position:absolute;left:0;top:0;height:100%;background:var(--red);width:0;transition:width 1.2s var(--ease) .4s;display:block}
+  .slide.active .tl-line i{width:100%}
+  .tl-dots{position:relative;display:flex;justify-content:space-between}
+  .tl-dot{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:inherit;padding:0}
+  .tl-dot .d{width:17px;height:17px;border-radius:50%;background:var(--paper);border:2px solid var(--line);transition:all .3s var(--ease);display:grid;place-items:center}
+  .tl-dot .d::after{content:"";width:6px;height:6px;border-radius:50%;background:transparent;transition:background .3s}
+  .tl-dot span{font-family:var(--serif);font-size:clamp(11.5px,1.15vw,18px);color:var(--muted);transition:color .3s}
+  .tl-dot:hover .d{border-color:var(--red)}
+  .tl-dot.on .d{border-color:var(--red);background:var(--red);transform:scale(1.15)}
+  .tl-dot.on .d::after{background:#fff}
+  .tl-dot.on span{color:var(--red);font-weight:600}
+  .tl-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:clamp(11px,1.3vw,20px);min-height:clamp(74px,8vw,102px)}
+  .tl-card b{display:block;font-family:var(--serif);font-size:clamp(14px,1.5vw,22px);margin-bottom:5px}
+  .tl-tag{display:inline-block;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--red);background:var(--red-soft);padding:3px 9px;border-radius:99px;margin-bottom:8px}
+
+  /* ═══ medidor ═══ */
+  .gauge{position:relative;width:clamp(130px,14vw,200px);aspect-ratio:1}
+  .gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .gauge circle{fill:none;stroke-width:11;stroke-linecap:round}
+  .gauge .track{stroke:rgba(255,255,255,.16)}
+  .gauge .fill{stroke:#fff;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.5s var(--ease) .3s}
+  .gauge .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .gauge .val b{font-family:var(--serif);font-size:clamp(30px,3.9vw,56px);line-height:1;display:block}
+  .gauge .val i{font-style:normal;font-size:clamp(9px,.8vw,11.5px);letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+
+  /* ═══ dona ═══ */
+  .donut{position:relative;width:clamp(140px,15vw,220px);aspect-ratio:1}
+  .donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .donut circle{fill:none;stroke-width:22;stroke-dasharray:0 999;transition:stroke-dasharray 1.3s var(--ease)}
+  .donut .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .donut .center b{font-family:var(--serif);font-size:clamp(22px,2.6vw,40px);display:block;line-height:1;color:var(--red)}
+  .donut .center i{font-style:normal;font-size:clamp(9px,.76vw,11px);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .legend{display:flex;flex-direction:column;gap:9px}
+  .legend div{display:flex;align-items:center;gap:10px;font-size:clamp(11px,.94vw,14px)}
+  .legend i{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+  .legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+
+  /* ═══ podio ═══ */
+  .podium{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,.9vw,14px);align-items:end}
+  .pod{border-radius:11px 11px 0 0;padding:clamp(9px,1vw,15px);text-align:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-bottom:none;display:flex;flex-direction:column;justify-content:flex-end}
+  .pod .pos{font-family:var(--serif);font-size:clamp(17px,1.9vw,30px);line-height:1;color:rgba(255,255,255,.6)}
+  .pod b{display:block;margin-top:5px;font-size:clamp(11px,.94vw,14px);color:#fff}
+  .pod em{font-style:normal;font-size:clamp(9px,.76vw,11px);color:rgba(255,255,255,.6)}
+  .pod.p1{height:clamp(74px,8vw,110px)}.pod.p2{height:clamp(62px,6.8vw,94px)}
+  .pod.p3{height:clamp(96px,10.4vw,140px);background:#fff;border-color:#fff}
+  .pod.p3 .pos{color:var(--red)} .pod.p3 b{color:var(--ink)} .pod.p3 em{color:var(--muted)}
+
+  /* ═══ bibliografía ═══ */
+  .biblio{columns:2;column-gap:clamp(20px,2.6vw,44px);overflow-y:auto;flex:1;padding-right:10px}
+  .biblio p{font-size:clamp(9px,.74vw,11px);line-height:1.55;color:rgba(255,255,255,.8);margin-bottom:10px;break-inside:avoid;padding-left:17px;text-indent:-17px;overflow-wrap:anywhere}
+  .biblio i{color:rgba(255,255,255,.93)}
+  .biblio a{color:rgba(255,255,255,.5);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.18)}
+  .biblio a:hover{color:#fff;border-bottom-color:#fff}
+  .biblio::-webkit-scrollbar{width:5px}
+  .biblio::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:9px}
+
+  /* ═══ pantalla de embarque ═══ */
+  #intro{
+    position:fixed;left:0;top:0;width:100%;height:100%;height:100dvh;z-index:100;
+    background:var(--red);color:#fff;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(12px,1.8vw,24px);
+    padding:clamp(22px,4.5vw,60px);text-align:center;
+    /* salida larga: se funde con la portada en vez de cortar de golpe */
+    transition:opacity 1.4s var(--ease), visibility 0s 1.4s;
+  }
+  #intro.done{opacity:0;visibility:hidden;pointer-events:none}
+  #intro .intro-wait,#intro .intro-go{transition:opacity .8s var(--ease), transform 1.1s var(--ease)}
+  #intro.done .intro-wait,#intro.done .intro-go{opacity:0;transform:translateY(-16px) scale(.985)}
+  #intro .wave{position:absolute;inset:0;opacity:.12;background:repeating-linear-gradient(115deg,rgba(255,255,255,.4) 0 2px,transparent 2px 26px);animation:drift 24s linear infinite}
+
+  .intro-wait,.intro-go{position:relative;width:100%;max-width:660px;display:flex;flex-direction:column;align-items:center;gap:clamp(11px,1.6vw,20px)}
+  .intro-go{display:none}
+  #intro.go .intro-go{display:flex}
+  #intro.go #startBtn{display:none}
+
+  .intro-flag{width:clamp(88px,9vw,132px);height:auto;fill:#fff;opacity:.9;margin-bottom:2px;filter:drop-shadow(0 8px 22px rgba(0,0,0,.22))}
+  #intro h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.8vw,58px);line-height:1.02;letter-spacing:-.02em}
+  #intro p{color:rgba(255,255,255,.92);font-size:clamp(13.5px,1.3vw,19px);max-width:42ch;line-height:1.5}
+  #intro p b{color:#fff}
+
+  .board{width:100%;border:1px solid rgba(255,255,255,.24);border-radius:12px;background:rgba(0,0,0,.2);backdrop-filter:blur(8px);overflow:hidden;margin-top:4px}
+  .board-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:clamp(7px,.9vw,11px) clamp(13px,1.6vw,22px);border-bottom:1px solid rgba(255,255,255,.11);font-size:clamp(9px,.82vw,11.5px);letter-spacing:.2em;text-transform:uppercase}
+  .board-row:last-child{border-bottom:none}
+  .board-row span{opacity:.62;font-weight:700}
+  .board-row b{font-family:var(--mono);font-size:clamp(11px,1.05vw,15px);letter-spacing:.12em}
+  .blink{animation:blink 1.2s steps(1) infinite}
+  @keyframes blink{50%{opacity:.25}}
+
+  #startBtn{
+    margin-top:8px;background:#fff;color:var(--red);border:none;border-radius:99px;
+    padding:clamp(12px,1.3vw,17px) clamp(26px,3vw,42px);font-family:inherit;
+    font-size:clamp(11px,1vw,14px);letter-spacing:.2em;text-transform:uppercase;font-weight:700;
+    cursor:pointer;box-shadow:0 14px 40px rgba(0,0,0,.28);
+    transition:transform .3s var(--ease),box-shadow .3s var(--ease);
+  }
+  #startBtn:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(0,0,0,.34)}
+
+  .intro-estado{font-size:clamp(11px,1.05vw,14px);letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.92);min-height:1.4em}
+  .prog{width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+  .prog i{display:block;height:100%;width:0;background:#fff;border-radius:99px}
+  #intro.go .prog i{animation:fill 10s linear forwards}
+  @keyframes fill{to{width:100%}}
+
+  #skipBtn{margin-top:6px;background:none;border:none;color:rgba(255,255,255,.6);font-family:inherit;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:color .3s}
+  #skipBtn:hover{color:#fff}
+
+  @media (prefers-reduced-motion:reduce){ #intro .wave{animation:none} }
+
+  /* ═══ chrome ═══ */
+  #progress{position:fixed;top:0;left:0;height:3px;background:var(--red);z-index:60;transition:width .45s var(--ease);width:0}
+  #dots{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:60}
+  #dots button{width:6px;height:6px;border-radius:50%;border:none;background:rgba(0,0,0,.2);cursor:pointer;padding:0;transition:all .32s var(--ease)}
+  #dots button.on{width:22px;border-radius:99px;background:var(--red)}
+  body.oncolor #dots button{background:rgba(255,255,255,.34)}
+  body.oncolor #dots button.on{background:#fff}
+  .navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:60;width:38px;height:38px;border-radius:50%;border:1px solid rgba(0,0,0,.12);background:rgba(255,255,255,.7);backdrop-filter:blur(8px);cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:all .3s var(--ease);opacity:.45}
+  .navbtn:hover{opacity:1;transform:translateY(-50%) scale(1.08)}
+  #prev{left:11px}#next{right:11px}
+  body.oncolor .navbtn{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff}
+  #counter{position:fixed;bottom:13px;right:15px;z-index:60;font-size:10.5px;letter-spacing:.12em;color:var(--muted);font-variant-numeric:tabular-nums}
+  body.oncolor #counter{color:rgba(255,255,255,.62)}
+  #counter b{color:var(--ink);font-weight:700}
+  body.oncolor #counter b{color:#fff}
+  #fs{position:fixed;top:12px;right:15px;z-index:60;background:none;border:none;cursor:pointer;color:var(--muted);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;font-family:inherit;opacity:.55;transition:opacity .3s}
+  #fs:hover{opacity:1}
+  body.oncolor #fs{color:rgba(255,255,255,.75)}
+  #music{position:fixed;bottom:11px;left:13px;z-index:60;display:flex;align-items:center;gap:9px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:99px;padding:6px 14px 6px 11px;cursor:pointer;color:var(--muted);font-family:inherit;font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;opacity:.55;transition:all .3s var(--ease)}
+  #music:hover{opacity:1}
+  #music.on{opacity:1;color:var(--red);border-color:var(--red)}
+  body.oncolor #music{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3)}
+  body.oncolor #music.on{color:#fff;border-color:#fff}
+  #music .eq{display:flex;align-items:flex-end;gap:2px;height:11px}
+  #music .eq i{width:2px;background:currentColor;height:3px;border-radius:1px;transition:height .3s}
+  #music.on .eq i{animation:eq .9s ease-in-out infinite}
+  #music.on .eq i:nth-child(2){animation-delay:.15s}
+  #music.on .eq i:nth-child(3){animation-delay:.3s}
+  #music.on .eq i:nth-child(4){animation-delay:.45s}
+  @keyframes eq{0%,100%{height:3px}50%{height:11px}}
+  /* ═══ maquetación tipo revista: información a un lado, foto al otro ═══ */
+  .revista{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(16px,2.6vw,46px);align-items:center;width:100%}
+  .rev-info{min-width:0}
+  .rev-foto{
+    position:relative;margin:0;border-radius:16px;overflow:hidden;
+    aspect-ratio:4/5;max-height:min(66vh,560px);width:100%;
+    box-shadow:0 24px 60px rgba(20,22,27,.2);background:rgba(0,0,0,.06);
+  }
+  .rev-foto img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.07);transition:transform 7s linear}
+  .slide.active .rev-foto img{transform:scale(1)}
+  .rev-foto figcaption{
+    position:absolute;left:0;right:0;bottom:0;padding:34px 16px 12px;
+    background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,.25) 55%,transparent);
+    color:#fff;font-size:clamp(9px,.78vw,11.5px);letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+  }
+  .rev-foto.ancha{aspect-ratio:5/4}
+
+  /* ═══ collage de la portada ═══ */
+  .collage{position:absolute;inset:0;pointer-events:none;z-index:0}
+  .collage img{
+    position:absolute;object-fit:cover;border-radius:10px;
+    border:4px solid rgba(255,255,255,.92);box-shadow:0 20px 46px rgba(0,0,0,.35);
+    opacity:0;transform:translateY(18px) scale(.92) rotate(var(--rot,0deg));
+    transition:opacity 1s var(--ease), transform 1.2s var(--ease);
+  }
+  .slide.active .collage img{
+    opacity:.95;transform:translateY(0) scale(1) rotate(var(--rot,0deg));
+    transition-delay:calc(var(--d,0)*130ms + 350ms);
+  }
+  @media (max-width:1150px){ .collage{display:none} }
+
+  /* ═══ créditos de las fotografías ═══ */
+  .creditos{margin-top:clamp(10px,1.4vw,20px);border-top:1px solid rgba(255,255,255,.16);padding-top:clamp(8px,1vw,14px)}
+  .creditos b{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:7px;font-weight:700}
+  .creditos p{font-size:clamp(8.5px,.7vw,10.5px);line-height:1.5;color:rgba(255,255,255,.6);margin:0}
+
+  /* silueta del lugar: fondo grande de cada diapositiva, solo el dibujo */
+  .silueta{
+    position:absolute;right:-3%;bottom:-2%;z-index:-1;pointer-events:none;
+    height:min(76vh,660px);opacity:.06;color:var(--ink);
+    transform:translateY(18px);transition:transform 1.4s var(--ease) .4s, opacity 1.2s var(--ease) .4s;
+  }
+  .slide.active .silueta{transform:none}
+  .slide.dark .silueta,.slide.ink .silueta{color:#fff;opacity:.1}
+  .silueta svg{height:100%;width:auto;display:block;fill:currentColor}
+
+  @media (prefers-reduced-motion:reduce){ .sky .plane{display:none} }
+  @media (max-width:700px){ .silueta{height:min(46vh,330px);opacity:.05} }
+
+  .hint{display:inline-flex;align-items:center;gap:7px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;opacity:.62}
+  .key{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border:1px solid currentColor;border-radius:5px;font-size:9px;opacity:.8}
+
+  /* ══════════ RESPONSIVE ══════════ */
+
+  /* pantallas bajas: menos aire vertical */
+  @media (max-height:700px){
+    .slide{padding-top:clamp(14px,2.4vw,34px);padding-bottom:clamp(52px,6.6vh,70px)}
+    .head{margin-bottom:clamp(7px,1vw,15px)}
+    .stamp{top:clamp(46px,6.4vw,84px);width:clamp(80px,8.4vw,118px)}
+  }
+
+  /* laptops chicas y tablets horizontales */
+  @media (max-width:1180px){
+    .c4{grid-template-columns:repeat(2,1fr)}
+    .catgrid{grid-template-columns:repeat(2,1fr)}
+    .stamp{width:clamp(80px,9vw,120px)}
+  }
+
+  /* tablets */
+  @media (max-width:980px){
+    .slide{justify-content:flex-start;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding-top:clamp(46px,7vw,64px)}
+    .slide > *{flex-shrink:0}
+    .split{grid-template-columns:1fr;align-items:stretch}
+    /* en pantallas angostas la revista se apila: primero la foto, luego el texto */
+    .revista{grid-template-columns:1fr;gap:clamp(12px,2vw,20px)}
+    .revista .rev-foto,.revista > .r:last-child{order:-1}
+    .rev-foto{aspect-ratio:16/9;max-height:min(34vh,260px)}
+    .rev-foto.ancha{aspect-ratio:16/9}
+    .navbtn,.stamp{display:none}
+    h2{max-width:none}
+    .bp{grid-template-columns:1fr;max-width:640px}
+    .bp::before,.bp::after{display:none}
+    .bp-stub{border-left:none;border-top:2px dashed var(--line);border-radius:0 0 16px 16px;flex-direction:row;flex-wrap:wrap;justify-content:space-around;align-items:center}
+    .bp-code{width:100%;height:34px;order:3}
+    .credits{grid-template-columns:1fr;gap:16px;align-items:start}
+    .destino{text-align:left}
+    .destino .big{font-size:clamp(19px,4.4vw,28px)}
+    .credits .hint{justify-content:flex-start!important}
+    .sky{opacity:.5}
+    .biblio{columns:1}
+  }
+
+  /* celulares */
+  @media (max-width:700px){
+    .slide{padding-left:20px;padding-right:20px;padding-bottom:74px}
+    .c2,.c3,.c4,.catgrid{grid-template-columns:1fr}
+    .lv1,.lv2,.lv3{width:100%}
+    .bp-fields{grid-template-columns:repeat(2,1fr)}
+    .tl-dot span{font-size:11px}
+    .tl-dots{gap:4px}
+    .legend{width:100%}
+    .podium{grid-template-columns:repeat(3,1fr)}
+    #music{font-size:0;gap:0;padding:9px 11px}
+    #counter{font-size:9.5px}
+    #dots{gap:5px}
+    #dots button{width:5px;height:5px}
+    #dots button.on{width:17px}
+  }
+
+  /* celulares angostos */
+  @media (max-width:430px){
+    .bp-fields{grid-template-columns:1fr 1fr;gap:8px}
+    .bp-city b{font-size:26px}
+    .team{flex-direction:column;gap:7px}
+    .tl-dot span{font-size:10px}
+    .donut{width:150px}
+    .gauge{width:130px}
+  }
+
+  /* ── celular en vertical: la orientación más apretada ── */
+  @media (max-width:820px) and (orientation:portrait){
+    .slide{padding:52px 18px 78px;gap:0}
+    h1{font-size:clamp(30px,9vw,44px)}
+    h2{font-size:clamp(21px,6.2vw,30px);line-height:1.12}
+    .head{margin-bottom:12px}
+    p{font-size:14px;line-height:1.55}
+    .lead{font-size:15px}
+    .sub{font-size:11.5px}
+    .cite{font-size:11px}
+    .split,.cols{gap:12px}
+    .fld{padding:9px 0}
+    .fld p{font-size:13.5px}
+    .card{padding:14px}
+    .card p{font-size:13px}
+    .cat{padding:13px}
+    .cat b{font-size:15px}
+    .cat span{font-size:12px}
+    .cat .n{font-size:20px;top:8px;right:11px}
+    .level{padding:11px 14px}
+    .level .lv-name b{font-size:13.5px}
+    .level .lv-count{font-size:20px}
+    .court-detail{min-height:0}
+    .tl-card{min-height:0;padding:14px}
+    .tl-card b{font-size:16px}
+    .legend div{font-size:13px}
+    .donut,.gauge{width:min(58vw,210px)}
+    .pod b{font-size:12px}
+    .pod em{font-size:10px}
+    .biblio{overflow:visible;flex:none}
+    .biblio p{font-size:11px;line-height:1.6}
+    .silueta{height:min(42vh,300px);opacity:.05;right:-8%}
+    .slide.dark .silueta,.slide.ink .silueta{opacity:.075}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ PANTALLA DE EMBARQUE ══════════ -->
+<div id="intro">
+  <div class="wave"></div>
+  <div class="flag-bg"><span class="cross-v"></span><span class="cross-h"></span></div>
+
+  <div class="intro-wait">
+    <svg class="intro-flag" viewBox="-2 -8 68 52" aria-hidden="true">
+      <path d="M4 38V18l7-8 7 8v20z"/>
+      <path d="M20 38V14l7-8 7 8v24z"/>
+      <path d="M36 38V21l6-7 6 7v17z"/>
+      <path d="M52 6h2v32h-2z"/><path d="M55 8l8 6-8 5z"/>
+      <path d="M0 38h64v4H0z"/>
+    </svg>
+    <h1>Bienvenidos al Grupo 4</h1>
+    <p>Se solicita al grupo de <b>Claves del Pensamiento 1</b> pasar a abordar.</p>
+    <div class="board">
+      <div class="board-row"><span>Vuelo</span><b>DK 1849</b></div>
+      <div class="board-row"><span>Origen</span><b>GUA · Guatemala</b></div>
+      <div class="board-row"><span>Destino</span><b>CPH · Copenhague</b></div>
+      <div class="board-row"><span>Puerta</span><b>06</b></div>
+      <div class="board-row"><span>Estado</span><b class="blink" id="estadoBoard">Embarcando</b></div>
+    </div>
+    <button id="startBtn">Iniciar embarque</button>
+  </div>
+
+  <div class="intro-go">
+    <div class="intro-estado" id="introEstado">Embarcando pasajeros</div>
+    <div class="prog"><i></i></div>
+    <button id="skipBtn">Saltar</button>
+  </div>
+</div>
+
+<div id="deck">
+
+<!-- ══════════ 1 · BOLETO (portada) ══════════ -->
+<section class="slide" id="s0" data-tone="color">
+  <div class="wave"></div><div class="flag-bg"><span class="cross-v"></span><span class="cross-h"></span></div>
+
+  <svg class="sky" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path id="routePath" class="route-bg" d="M 34 296 C 226 136, 432 74, 656 124 S 1006 236, 1178 58"/>
+    <path class="route" pathLength="1" d="M 34 296 C 226 136, 432 74, 656 124 S 1006 236, 1178 58"/>
+
+    <g>
+      <circle class="node" cx="34" cy="296" r="7"/>
+      <circle class="ping" cx="34" cy="296" r="7">
+        <animate attributeName="r" values="7;36" dur="2.8s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values=".75;0" dur="2.8s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <g>
+      <circle class="node" cx="1178" cy="58" r="7"/>
+      <circle class="ping" cx="1178" cy="58" r="7">
+        <animate attributeName="r" values="7;36" dur="2.8s" begin="1.4s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values=".75;0" dur="2.8s" begin="1.4s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <g class="plane">
+      <circle class="halo" cx="0" cy="0" r="26"/>
+      <path d="M24 0 L6 -4 L4 -15 L0 -15 L-2 -4 L-16 -4 L-21 -10 L-25 -10 L-22 0 L-25 10 L-21 10 L-16 4 L-2 4 L0 15 L4 15 L6 4 Z"/>
+      <animateMotion dur="11s" repeatCount="indefinite" rotate="auto" calcMode="spline" keyPoints="0;1" keyTimes="0;1" keySplines="0.42 0 0.58 1">
+        <mpath href="#routePath" xlink:href="#routePath"/>
+      </animateMotion>
+    </g>
+  </svg>
+
+  <div class="collage" aria-hidden="true">
+    <img src="imagenes/nyhavn.jpg"         alt="" style="--rot:-5deg;--d:0;left:1.5%;top:7%;   width:13vw;height:16vw">
+    <img src="imagenes/monsklint.jpg"      alt="" style="--rot:4deg; --d:2;left:.5%; top:39%;  width:12vw;height:12vw">
+    <img src="imagenes/bicicletas.jpg"     alt="" style="--rot:-3deg;--d:4;left:2%;  bottom:6%; width:13vw;height:13vw">
+    <img src="imagenes/kronborg.jpg"       alt="" style="--rot:5deg; --d:1;right:1.5%;top:6%;  width:12vw;height:13vw">
+    <img src="imagenes/tivoli.jpg"         alt="" style="--rot:-4deg;--d:3;right:.5%; top:36%; width:13vw;height:15vw">
+    <img src="imagenes/skagen.jpg"         alt="" style="--rot:3deg; --d:5;right:2%;  bottom:6%;width:12vw;height:12vw">
+  </div>
+
+  <div class="bp">
+    <div class="bp-main">
+      <div class="bp-hd">
+        <div class="bp-brand">
+          <svg viewBox="0 0 37 28"><rect width="37" height="28" fill="#C8102E"/><rect x="12" width="4" height="28" fill="#fff"/><rect y="12" width="37" height="4" fill="#fff"/></svg>
+          Pasaporte Cultural · Reino de Dinamarca
+        </div>
+        <div class="bp-tag">Pase de abordar · Grupo 4</div>
+      </div>
+      <div class="bp-route">
+        <div class="bp-city"><b>GUA</b><span>Guatemala</span></div>
+        <div class="bp-arrow"><span class="bp-plane"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></span></div>
+        <div class="bp-city"><b>CPH</b><span>Copenhague</span></div>
+      </div>
+      <div class="bp-fields">
+        <div class="bp-f"><b>Pasajeras</b><span>Elena y Mafer</span></div>
+        <div class="bp-f"><b>Vuelo</b><span>DK 1849</span></div>
+        <div class="bp-f"><b>Puerta</b><span>06</span></div>
+        <div class="bp-f"><b>Asientos</b><span>1A · 1B</span></div>
+        <div class="bp-f"><b>Embarque</b><span>Próxima clase</span></div>
+        <div class="bp-f"><b>Duración</b><span>5 minutos</span></div>
+        <div class="bp-f"><b>Equipaje</b><span>Hygge incluido</span></div>
+        <div class="bp-f"><b>Estado</b><span style="color:var(--red)">Confirmado</span></div>
+      </div>
+    </div>
+    <div class="bp-stub">
+      <div><div class="big">CPH</div><div class="lbl">Copenhague</div></div>
+      <div><div style="font-size:clamp(10.5px,.9vw,13.5px);font-weight:700">DK 1849</div><div class="lbl">Asiento 1A · 1B</div></div>
+      <div class="bp-code"></div>
+    </div>
+  </div>
+
+  <div class="credits">
+    <div>
+      <div class="eyebrow r" data-i="1" style="color:rgba(255,255,255,.82)">Universidad del Istmo · Claves del Pensamiento 1</div>
+      <p class="r" data-i="2" style="color:rgba(255,255,255,.88);margin-bottom:12px">Catedrática: Licda. Elena Del Rosario Tárano Girón</p>
+      <div class="team r" data-i="3">
+        <div>Calderón Pérez,<br>Axel José</div>
+        <div>González Corado,<br>José Manuel</div>
+        <div>Navichoque Pineda,<br>José David</div>
+        <div>Torres García,<br>Juan Pablo</div>
+      </div>
+    </div>
+    <div class="r" data-i="4">
+      <div class="destino">
+        <div class="lbl">Destino</div>
+        <div class="big">Reino de<br>Dinamarca</div>
+      </div>
+      <div class="hint" style="color:#fff;margin-top:14px;justify-content:flex-end"><span class="key">←</span><span class="key">→</span> navegar · <span class="key">F</span> pantalla completa</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 2 · INTRODUCCIÓN ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">Introducción</div>
+    <h2 class="r" data-i="1">Una península, más de <span class="hl">400 islas</span> y seis categorías que funcionan.</h2>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="2">
+      <div class="cols c2" style="gap:0 clamp(12px,1.6vw,26px)">
+        <div>
+          <div class="fld"><b>Ubicación</b><p>Norte de Europa, en Escandinavia. Su única frontera por tierra es con Alemania.</p></div>
+          <div class="fld"><b>Superficie</b><p>Unos 43,000 km²: dos quintas partes de Guatemala.</p></div>
+          <div class="fld"><b>Capital</b><p>Copenhague.</p></div>
+        </div>
+        <div>
+          <div class="fld"><b>Idioma</b><p>Danés. Cerca del 90 % también habla inglés.</p></div>
+          <div class="fld"><b>Población</b><p>Poco más de 6 millones de habitantes.</p></div>
+          <div class="fld"><b>Moneda</b><p>La corona danesa. Están en la Unión Europea, pero rechazaron el euro en un referéndum (sep. 2000).</p></div>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:clamp(8px,1vw,15px)">Su bandera es la más antigua del mundo que sigue en uso. Fueron vikingos y hoy son una de las sociedades más pacíficas y digitalizadas del planeta.</p>
+      <p style="margin-top:clamp(9px,1.2vw,17px)">Lo analizamos con las <b>seis categorías sociales</b>: cuatro <b>externas</b> y dos <b>internas, de mayor rango</b>.</p>
+      <div class="chips">
+        <button data-goto="2"><i>01</i>Hábitat</button>
+        <button data-goto="3"><i>02</i>Economía</button>
+        <button data-goto="4"><i>03</i>Derecho</button>
+        <button data-goto="5"><i>04</i>Política</button>
+        <button class="int" data-goto="6"><i>05</i>Ética</button>
+        <button class="int" data-goto="7"><i>06</i>Religión</button>
+      </div>
+    </div>
+    <figure class="rev-foto r" data-i="3">
+      <img src="imagenes/tivoli.jpg" alt="Los Jardines de Tívoli en Copenhague">
+      <figcaption>Jardines de Tívoli · Copenhague</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 3 · HÁBITAT ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">01 · Externa — Hábitat</div>
+    <h2 class="r" data-i="1">Medio año con poca luz. De ahí salió el <span class="hl">diseño danés</span>.</h2>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="2">
+      <div class="fld"><b>Territorio</b><p>País eminentemente llano: su punto más alto son 173 m y su costa mide 7,314 km. El 64 % del territorio está bajo cultivo. <span class="cite">(Embajada de Dinamarca, 2024)</span></p></div>
+      <div class="fld"><b>Clima</b><p>Templado oceánico: inviernos suaves y veranos frescos. En invierno los días son muy cortos.</p></div>
+      <div class="fld"><b>Ciudades principales</b><p>Copenhague, Aarhus, Odense y Aalborg.</p></div>
+      <div class="fld"><b>Forma de vida</b><p>Como pasan medio año con poca luz, desarrollaron una cultura del hogar de la que salió el diseño danés. La bicicleta es el transporte normal, en cualquier clima.</p></div>
+      <div class="card accent" style="margin-top:clamp(10px,1.3vw,18px)">
+        <div class="num">92 %</div><h3>Electricidad limpia</h3>
+        <p>Producen más energía del viento por habitante que cualquier otro país desarrollado. <span style="opacity:.7">(Low Carbon Power, 2026 · Sitio oficial de Dinamarca, 2026)</span></p>
+      </div>
+    </div>
+    <figure class="rev-foto r" data-i="3">
+      <img src="imagenes/monsklint.jpg" alt="Los acantilados de creta de Møns Klint">
+      <figcaption>Acantilados de Møns Klint</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 4 · ECONOMÍA ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">02 · Externa — Economía</div>
+    <h2 class="r" data-i="1">Sin recursos, solo podían competir <span class="hl">haciendo las cosas mejor</span>.</h2>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="2">
+      <div class="cols c2" style="gap:0 clamp(12px,1.6vw,26px)">
+        <div>
+          <div class="fld"><b>Actividades principales</b><p>Medicamentos, energía del viento, transporte marítimo, agroindustria y diseño.</p></div>
+          <div class="fld"><b>Recursos</b><p>Casi ninguno. Solo tierra fértil, viento y mar.</p></div>
+        </div>
+        <div>
+          <div class="fld"><b>Exportaciones</b><p>Medicamentos, maquinaria, carne de cerdo, lácteos y pescado, más turbinas de viento y juguetes LEGO. <span class="cite">(Banco Mundial, 2024)</span></p></div>
+          <div class="fld"><b>Desarrollo</b><p>Uno de los ingresos por persona más altos del mundo y, a la vez, una de las menores desigualdades.</p></div>
+        </div>
+      </div>
+      <div class="card accent" style="margin-top:clamp(10px,1.3vw,18px)">
+        <h3 style="margin-bottom:7px">“Solo lo mejor es suficientemente bueno”</h3>
+        <p>LEGO nació del taller de Ole Kirk Christiansen, un carpintero de Billund que tenía esa frase grabada a la entrada. <span style="opacity:.65">(National Geographic, 2023)</span></p>
+      </div>
+      <div class="fld"><b>Flexiguridad</b><p>Une la flexibilidad de las empresas con la seguridad del trabajador, apoyado en que el <b>75 % de los trabajadores está sindicalizado</b>. <span class="cite">(Embajada de Dinamarca, 2024)</span></p></div>
+    </div>
+    <figure class="rev-foto r" data-i="3">
+      <img src="imagenes/nyhavn.jpg" alt="El puerto de Nyhavn en Copenhague">
+      <figcaption>Nyhavn · el viejo puerto de Copenhague</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 5 · DERECHO ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">03 · Externa — Derecho</div>
+    <h2 class="r" data-i="1" style="max-width:none">Sistema de <span class="hl">derecho escrito</span>: el conflicto se resuelve con una ley, no con una guerra.</h2>
+    <p class="r" data-i="2" style="margin-top:8px;max-width:98ch">No sigue el modelo anglosajón de Estados Unidos o el Reino Unido, donde el juez se apoya en sentencias anteriores. Las leyes ya están redactadas de antemano y el juez las interpreta y aplica. Cada ley genera documentos preparatorios: esa intención del legislador no obliga a los tribunales, pero influye bastante. <span class="cite">(Judiciaries Worldwide, 2024)</span></p>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="3">
+      <div class="pyramid">
+        <div class="level lv1 on" data-court="0"><div class="lv-name"><b>Tribunal Supremo</b><em>Højesteret · última instancia</em></div><div class="lv-count">1</div></div>
+        <div class="level lv2" data-court="1"><div class="lv-name"><b>Audiencias</b><em>Landsretter · apelaciones</em></div><div class="lv-count">2</div></div>
+        <div class="level lv3" data-court="2"><div class="lv-name"><b>Juzgados locales</b><em>Byretter · primera instancia</em></div><div class="lv-count">24</div></div>
+      </div>
+      <div class="court-detail" id="courtDetail"></div>
+      <div class="tl"><div class="tl-line"><i></i></div><div class="tl-dots" id="tlDots"></div></div>
+      <div class="tl-card" id="tlCard"></div>
+      <p class="sub" style="margin-top:9px">Haz clic en los niveles y en los años · Comisión Europea (2024)</p>
+    </div>
+    <div class="r" data-i="4">
+      <figure class="rev-foto ancha" style="max-height:min(40vh,300px)">
+        <img src="imagenes/kronborg.jpg" alt="El castillo de Kronborg en Helsingør">
+        <figcaption>Castillo de Kronborg · Helsingør</figcaption>
+      </figure>
+      <div class="fld" style="margin-top:clamp(9px,1.2vw,16px)"><b>Derechos humanos</b><p>No se consiguen de una vez: son trabajo continuo. El médico danés Struensee fue de los primeros en impulsarlos a finales del siglo XVIII. <span class="cite">(Sitio oficial de Dinamarca, 2026)</span></p></div>
+      <div class="fld"><b>Igualdad hombre–mujer</b><p>Pilar del Estado desde hace más de cien años y clave del bienestar danés: con la industrialización las mujeres entraron rápido a la fuerza laboral.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 6 · POLÍTICA ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">04 · Externa — Política</div>
+    <h2 class="r" data-i="1">Monarquía constitucional con sistema <span class="hl">parlamentario</span>.</h2>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="2">
+      <div class="cols c2" style="gap:0 clamp(12px,1.6vw,26px)">
+        <div>
+          <div class="fld"><b>Forma de gobierno</b><p>El rey cumple un papel ceremonial y no gobierna. Aunque en el papel conserva poder, está limitado por las normas constitucionales. <span class="cite">(Parlamento Danés, 2024)</span></p></div>
+          <div class="fld"><b>Poder legislativo</b><p>Una sola cámara de 179 diputados que aprueba las leyes y el gabinete. <span class="cite">(Folketing, 2026)</span></p></div>
+          <div class="fld"><b>Autoridades</b><p>El rey Federico X desde enero de 2024 y la primera ministra Mette Frederiksen.</p></div>
+        </div>
+        <div>
+          <div class="fld"><b>Poder ejecutivo</b><p>La primera ministra y su gabinete, formado con miembros del propio parlamento.</p></div>
+          <div class="fld"><b>Poder judicial</b><p>Tribunal Supremo, dos audiencias, el Tribunal Marítimo y Comercial y 24 juzgados locales. <span class="cite">(Comisión Europea, 2024)</span></p></div>
+          <div class="fld"><b>Participación ciudadana</b><p>Vota más del <b>80 %</b> aunque no sea obligatorio, por la confianza en las instituciones. <span class="cite">(PolitPro, 2026)</span></p></div>
+        </div>
+      </div>
+      <div class="card accent" style="margin-top:clamp(10px,1.3vw,18px)">
+        <div class="num">70 días</div><h3>Formando gobierno en 2026</h3>
+        <p>Lo más largo de su historia, y lo resolvieron con acuerdos. <span style="opacity:.65">(Infobae, 2026)</span></p>
+      </div>
+    </div>
+    <figure class="rev-foto r" data-i="3">
+      <img src="imagenes/christiansborg.jpg" alt="El palacio de Christiansborg, sede del parlamento danés">
+      <figcaption>Christiansborg · sede del Folketing</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 7 · ÉTICA ══════════ -->
+<section class="slide dark" data-tone="color">
+  <div class="flag-bg"><span class="cross-v"></span><span class="cross-h"></span></div>
+  <div style="position:relative" class="head">
+    <div class="eyebrow r" data-i="0">05 · Interna — Ética</div>
+    <h2 class="r" data-i="1" style="color:#fff">Igualdad, honestidad y confianza.</h2>
+    <p class="r" data-i="2" style="margin-top:8px;max-width:86ch">No presumir lo que uno tiene y equilibrar el trabajo con la vida personal: están entre los trabajadores más eficientes de Europa sin vivir para trabajar. <span class="cite">(Sitio oficial de Dinamarca, 2026)</span></p>
+  </div>
+  <div style="position:relative" class="revista">
+    <div class="rev-info r" data-i="3">
+      <div class="card" style="background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.2)">
+        <h3 style="color:#fff;margin-bottom:8px">La Ley de Jante</h3>
+        <p style="color:rgba(255,255,255,.88);font-family:var(--serif);font-size:clamp(12.5px,1.08vw,16px);line-height:1.55">Norma social no escrita, nacida en una novela de Aksel Sandemose de 1933: <b style="color:#fff">nadie debe creerse superior</b> aunque sepa más o tenga más capacidades. <span class="cite">(Ley de Jante, 2026)</span></p>
+      </div>
+      <p style="margin-top:12px;color:rgba(255,255,255,.86)">Los padres dejan a los bebés dormidos en el cochecito afuera de las cafeterías, y los agricultores ponen frutas y verduras a la orilla de la carretera sin nadie atendiendo.</p>
+      <div class="fld" style="border-top-color:rgba(255,255,255,.25);margin-top:6px">
+        <b>Confianza en el gobierno</b>
+        <p>La confianza de los daneses en su gobierno es del <b style="color:#fff">55.6 %</b>. <span class="cite">(La República, 2026, con datos de la OCDE)</span></p>
+      </div>
+      <div style="margin-top:clamp(9px,1.2vw,16px);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+        <div style="font-family:var(--serif);font-size:clamp(26px,3.4vw,50px);line-height:1;color:#fff">3.º país más feliz</div>
+        <div class="sub">del mundo · Informe Mundial de la Felicidad 2026</div>
+      </div>
+    </div>
+    <figure class="rev-foto r" data-i="4">
+      <img src="imagenes/bicicletas.jpg" alt="Ciclistas en las calles de Copenhague">
+      <figcaption>La bicicleta · Copenhague</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 8 · RELIGIÓN ══════════ -->
+<section class="slide" data-tone="light">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">06 · Interna — Religión</div>
+    <h2 class="r" data-i="1" style="max-width:none">Estado confesional con <span class="hl">libertad de culto plena</span>.</h2>
+    <p class="r" data-i="2" style="margin-top:8px;max-width:96ch">La Iglesia Protestante Luterana Danesa es religión oficial del Estado desde <b>1536</b> y así está en la Constitución. El rey está obligado a pertenecer a ella y cerca del 70 % de los daneses están inscritos en la Iglesia del Pueblo Danés y pagan un impuesto de iglesia. La segunda religión es el islam.</p>
+  </div>
+  <div class="revista">
+    <div class="rev-info r" data-i="3">
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,28px);flex-wrap:wrap">
+        <div class="donut" style="width:clamp(120px,12vw,175px)">
+          <svg viewBox="0 0 120 120">
+            <circle id="seg1" cx="60" cy="60" r="49" stroke="#C8102E"/>
+            <circle id="seg2" cx="60" cy="60" r="49" stroke="#14161B"/>
+            <circle id="seg3" cx="60" cy="60" r="49" stroke="#CFC8BF"/>
+          </svg>
+          <div class="center"><div><b>71.4%</b><i>Luteranos</i></div></div>
+        </div>
+        <div class="legend" style="flex:1;min-width:132px">
+          <div><i style="background:#C8102E"></i>Luteranos <b>71.4 %</b></div>
+          <div><i style="background:#14161B"></i>Islámicos <b>4.3 %</b></div>
+          <div><i style="background:#CFC8BF"></i>Otra / Ninguna <b>24.3 %</b></div>
+        </div>
+      </div>
+      <div class="fld" style="margin-top:clamp(8px,1.1vw,15px)"><b>Festividades</b><p>La Navidad el 24 de diciembre, la Semana Santa, la confirmación a los 14 años, el Gran Día de Oración —que solo existe en Dinamarca— y la Noche de San Juan con fogatas en las playas.</p></div>
+      <div class="fld"><b>Influencia en la cultura</b><p>En el siglo XIX el pastor luterano <b>Grundtvig</b> fundó las escuelas populares, donde se educaba al campesino común para que pensara por sí mismo. De ahí salió el movimiento cooperativo que organizó la agricultura danesa, y de ahí buena parte de su democracia y su confianza social. Hoy poca gente va al templo cada domingo, pero es ahí donde el danés nace, se casa y se despide.</p></div>
+    </div>
+    <figure class="rev-foto r" data-i="4">
+      <img src="imagenes/roskilde.jpg" alt="La fachada de la catedral de Roskilde">
+      <figcaption>Catedral de Roskilde</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══════════ 9 · CONCLUSIÓN ══════════ -->
+<section class="slide ink" data-tone="color">
+  <div class="head">
+    <div class="eyebrow r" data-i="0">Conclusión</div>
+    <h2 class="r" data-i="1" style="color:#fff;max-width:30ch">¿Qué categoría tiene mayor influencia en la identidad de Dinamarca?</h2>
+  </div>
+  <div class="split">
+    <div class="r" data-i="2">
+      <div style="font-family:var(--serif);font-size:clamp(38px,5.8vw,92px);line-height:1;color:var(--red)">La ética</div>
+      <p style="margin-top:13px">Porque es la única que explica a todas las demás. Dinamarca no tiene petróleo, ni minerales, ni buen clima: ninguna ventaja material alcanza para explicar por qué es el país menos corrupto del mundo desde hace ocho años seguidos y el tercero más feliz.</p>
+      <p style="margin-top:11px">Lo que sí lo explica son <b style="color:#fff">virtudes convertidas en costumbre</b>. Esa ética nació de la raíz luterana que Grundtvig llevó del templo a las escuelas populares, pero hoy ya no depende de la práctica religiosa: se transmite como cultura. Es el cimiento donde se paran las otras cinco.</p>
+    </div>
+    <div class="r" data-i="3">
+      <div class="cols c3" style="gap:clamp(8px,1vw,15px)">
+        <div class="fld"><b>Templanza</b><p>La Ley de Jante les dio una política que negocia en lugar de imponer.</p></div>
+        <div class="fld"><b>Honestidad</b><p>Convertida en hábito, les dio un derecho que se cumple sin vigilancia constante.</p></div>
+        <div class="fld"><b>Trabajo bien hecho</b><p>Les dio una economía que compite con calidad porque no tenía con qué más competir.</p></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,30px);margin-top:clamp(12px,1.6vw,24px);flex-wrap:wrap">
+        <div class="gauge">
+          <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="fill" id="ring" cx="60" cy="60" r="52"/></svg>
+          <div class="val"><div><b id="score">0</b><i>de 100 puntos</i></div></div>
+        </div>
+        <div style="flex:1;min-width:150px">
+          <div style="font-family:var(--serif);font-size:clamp(22px,3vw,44px);line-height:1;color:#fff">8.º año</div>
+          <div class="sub" style="margin-top:5px">consecutivo como el país menos corrupto del mundo</div>
+          <p class="cite" style="margin-top:7px">Transparencia Internacional (2026)</p>
+        </div>
+      </div>
+      <figure class="rev-foto ancha" style="margin-top:clamp(12px,1.6vw,22px);max-height:min(34vh,250px)">
+        <img src="imagenes/skagen.jpg" alt="Grenen, la punta norte de Dinamarca en Skagen">
+        <figcaption>Grenen, Skagen · donde se encuentran dos mares</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 10 · BIBLIOGRAFÍA ══════════ -->
+<section class="slide ink" data-tone="color" style="justify-content:flex-start">
+  <div class="head" style="margin-top:clamp(6px,1vw,16px)">
+    <div class="eyebrow r" data-i="0">Referencias en formato APA</div>
+    <h2 class="r" data-i="1" style="color:#fff">Bibliografía</h2>
+  </div>
+  <div class="biblio r" data-i="2">
+    <p>Banco Mundial. (2024). <i>Resumen del comercio de Dinamarca.</i> World Integrated Trade Solution. <a href="https://wits.worldbank.org/CountryProfile/es/Country/DNK" target="_blank" rel="noopener">https://wits.worldbank.org/CountryProfile/es/Country/DNK</a></p>
+    <p>Comisión Europea. (2024). <i>Sistemas judiciales nacionales: Dinamarca.</i> Portal Europeo de e-Justicia. <a href="https://e-justice.europa.eu/topics/taking-legal-action/legal-systems-eu-and-national/national-justice-systems/dk_es" target="_blank" rel="noopener">https://e-justice.europa.eu/topics/taking-legal-action/legal-systems-eu-and-national/national-justice-systems/dk_es</a></p>
+    <p><i>Constitución de Dinamarca.</i> (2025). En Wikipedia. <a href="https://es.wikipedia.org/wiki/Constituci%C3%B3n_de_Dinamarca" target="_blank" rel="noopener">https://es.wikipedia.org/wiki/Constitución_de_Dinamarca</a></p>
+    <p>Defensor del Pueblo Parlamentario de Dinamarca. (2026). <i>The Danish Parliamentary Ombudsman.</i> <a href="https://www.en.ombudsmanden.dk/" target="_blank" rel="noopener">https://www.en.ombudsmanden.dk/</a></p>
+    <p>Embajada de Dinamarca. (2024). <i>Flexiguridad, educación y el Estado de bienestar en Dinamarca.</i> Ministerio de Asuntos Exteriores de Dinamarca. <a href="https://spanien.um.dk/es/conoce-dinamarca/informacion-sobre-dinamarca/politica/flexiguridad-educacion-y-el-estado-de-bienestar-en-dinamarca" target="_blank" rel="noopener">https://spanien.um.dk/es/conoce-dinamarca/informacion-sobre-dinamarca/politica/flexiguridad-educacion-y-el-estado-de-bienestar-en-dinamarca</a></p>
+    <p>Embajada de Dinamarca. (2024). <i>La geografía y la infraestructura.</i> Ministerio de Asuntos Exteriores de Dinamarca. <a href="https://spanien.um.dk/es/conoce-dinamarca/informacion-sobre-dinamarca/la-geografia-y-la-infraestructura" target="_blank" rel="noopener">https://spanien.um.dk/es/conoce-dinamarca/informacion-sobre-dinamarca/la-geografia-y-la-infraestructura</a></p>
+    <p><i>Folketing.</i> (2026). En Wikipedia. <a href="https://es.wikipedia.org/wiki/Folketing" target="_blank" rel="noopener">https://es.wikipedia.org/wiki/Folketing</a></p>
+    <p>Folketinget. (2024). <i>The Constitutional Act.</i> Parlamento de Dinamarca. <a href="https://www.thedanishparliament.dk/en/democracy/the-constitutional-act" target="_blank" rel="noopener">https://www.thedanishparliament.dk/en/democracy/the-constitutional-act</a></p>
+    <p>Helliwell, J. F., Layard, R., Sachs, J. D. y De Neve, J. E. (Eds.). (2026). <i>Informe Mundial de la Felicidad 2026.</i> Universidad de Oxford y Gallup. <a href="https://worldhappiness.report" target="_blank" rel="noopener">https://worldhappiness.report</a></p>
+    <p>Infobae. (2026, 3 de junio). <i>Frederiksen logra su tercer mandato en Dinamarca con un giro a la izquierda y una agenda marcada por Groenlandia y la defensa.</i> <a href="https://www.infobae.com/america/mundo/2026/06/03/frederiksen-logra-su-tercer-mandato-en-dinamarca-con-un-giro-a-la-izquierda-y-una-agenda-marcada-por-groenlandia-y-la-defensa/" target="_blank" rel="noopener">https://www.infobae.com/america/mundo/2026/06/03/frederiksen-logra-su-tercer-mandato-en-dinamarca…</a></p>
+    <p>Judiciaries Worldwide. (2024). <i>Denmark.</i> Federal Judicial Center. <a href="https://judiciariesworldwide.fjc.gov/country-profile/denmark" target="_blank" rel="noopener">https://judiciariesworldwide.fjc.gov/country-profile/denmark</a></p>
+    <p>La República. (2026, 2 de junio). <i>Colombia es penúltima en confianza institucional entre países de la Ocde.</i> <a href="https://www.larepublica.co/globoeconomia/colombia-es-penultima-en-confianza-institucional-entre-paises-de-la-ocde-4405651" target="_blank" rel="noopener">https://www.larepublica.co/globoeconomia/colombia-es-penultima-en-confianza-institucional-entre-paises-de-la-ocde-4405651</a></p>
+    <p><i>Ley de Jante.</i> (2026). En Wikipedia. <a href="https://es.wikipedia.org/wiki/Ley_de_Jante" target="_blank" rel="noopener">https://es.wikipedia.org/wiki/Ley_de_Jante</a></p>
+    <p>Low Carbon Power. (2026). <i>Matriz energética de Dinamarca 2025.</i> <a href="https://lowcarbonpower.org/es/region/Dinamarca" target="_blank" rel="noopener">https://lowcarbonpower.org/es/region/Dinamarca</a></p>
+    <p><i>Matrimonio igualitario en Dinamarca.</i> (2025). En Wikipedia. <a href="https://es.wikipedia.org/wiki/Matrimonio_igualitario_en_Dinamarca" target="_blank" rel="noopener">https://es.wikipedia.org/wiki/Matrimonio_igualitario_en_Dinamarca</a></p>
+    <p>Ministerio de Asuntos Exteriores de Dinamarca. (2024). <i>Human rights.</i> <a href="https://denmark.dk/society-and-business/human-rights" target="_blank" rel="noopener">https://denmark.dk/society-and-business/human-rights</a></p>
+    <p>Ministerio de Asuntos Exteriores de Dinamarca. (2026). <i>Sitio oficial del Reino de Dinamarca.</i> <a href="https://denmark.dk" target="_blank" rel="noopener">https://denmark.dk</a></p>
+    <p>National Geographic. (2023, 11 de marzo). <i>Ole Kirk Christiansen, la vida del carpintero que creó el Lego.</i> <a href="https://historia.nationalgeographic.com.es/a/ole-kirk-christiansen-el-creador-de-lego-el-juego-de-construccion-mas-famoso-del-mundo_17770" target="_blank" rel="noopener">https://historia.nationalgeographic.com.es/a/ole-kirk-christiansen-el-creador-de-lego-el-juego-de-construccion-mas-famoso-del-mundo_17770</a></p>
+    <p>Nordics.info. (2025). <i>Ombudsman.</i> Universidad de Aarhus. <a href="https://nordics.info/show/artikel/preview-ombudsman-1" target="_blank" rel="noopener">https://nordics.info/show/artikel/preview-ombudsman-1</a></p>
+    <p>Organización de las Naciones Unidas. (2024). <i>Perspectivas de la población mundial, revisión de 2024.</i> <a href="https://population.un.org/wpp/" target="_blank" rel="noopener">https://population.un.org/wpp/</a></p>
+    <p>PolitPro. (2026). <i>Dinamarca: sistema político y participación electoral.</i> <a href="https://politpro.eu/es/dinamarca" target="_blank" rel="noopener">https://politpro.eu/es/dinamarca</a></p>
+    <p>Tárano Girón, E. D. R. (2026). <i>Las categorías sociales</i> [Documento de clase]. Claves del Pensamiento 1, Universidad del Istmo.</p>
+    <p>Transparencia Internacional. (2026). <i>Índice de percepción de la corrupción 2025.</i> <a href="https://www.transparency.org/es/cpi" target="_blank" rel="noopener">https://www.transparency.org/es/cpi</a></p>
+  </div>
+  <div class="creditos r" data-i="3">
+    <b>Créditos de las fotografías · Wikimedia Commons</b>
+    <p>Nyhavn y Christiansborg: Moahim (CC BY-SA 4.0) · Jardines de Tívoli: Junielib (CC BY-SA 4.0) · Møns Klint: Andreas Egger (CC BY-SA 4.0) · Kronborg: ArildV (CC BY-SA 4.0) · Ciclistas en Copenhague: Kristoffer Trolle (CC BY 2.0) · Catedral de Roskilde: Jebulon (CC0) · Grenen, Skagen: Diego Delso (CC BY-SA 4.0).</p>
+  </div>
+</section>
+
+</div>
+
+<div id="progress"></div>
+<button class="navbtn" id="prev" aria-label="Anterior"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+<button class="navbtn" id="next" aria-label="Siguiente"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+<div id="dots"></div>
+<div id="counter"><b>1</b> / 10</div>
+<button id="fs">Pantalla completa</button>
+<button id="music" aria-label="Activar o silenciar la música"><span class="eq"><i></i><i></i><i></i><i></i></span><span id="musicLabel">Música</span></button>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsBox = document.getElementById('dots');
+  var counter = document.getElementById('counter');
+  var progress = document.getElementById('progress');
+  var idx = 0;
+
+  slides.forEach(function(s){
+    s.querySelectorAll('.r').forEach(function(el, k){
+      el.style.setProperty('--i', el.dataset.i !== undefined ? el.dataset.i : k);
+    });
+  });
+
+  /* ── Siluetas de fondo: una por diapositiva, elegida a tono con su tema.
+        Lienzo de 64 x 44, con la línea de suelo en y = 38. ── */
+  var SUELO = '<path d="M0 38h64v4H0z"/>';
+  var SILUETAS = [
+    /* portada · Nyhavn: casas con techo a dos aguas y un mástil */
+    '<path d="M4 38V18l7-8 7 8v20z"/>' +
+    '<path d="M20 38V14l7-8 7 8v24z"/>' +
+    '<path d="M36 38V21l6-7 6 7v17z"/>' +
+    '<path d="M52 6h2v32h-2z"/><path d="M55 8l8 6-8 5z"/>' + SUELO,
+
+    /* introducción · la rueda de Tívoli */
+    '<circle cx="32" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.4"/>' +
+    '<circle cx="32" cy="16" r="3"/>' +
+    '<circle cx="32" cy="2" r="2.6"/><circle cx="46" cy="16" r="2.6"/>' +
+    '<circle cx="32" cy="30" r="2.6"/><circle cx="18" cy="16" r="2.6"/>' +
+    '<circle cx="42" cy="6" r="2.6"/><circle cx="42" cy="26" r="2.6"/>' +
+    '<circle cx="22" cy="26" r="2.6"/><circle cx="22" cy="6" r="2.6"/>' +
+    '<path d="M23 38l8-22h2l8 22h-4l-5-15-5 15z"/>' + SUELO,
+
+    /* hábitat · el perfil de los acantilados de Møns Klint */
+    '<path d="M0 38V23l8-8 6 7 8-11 7 12 7-7 8 11 7-6 6 6v11z"/>' + SUELO,
+
+    /* economía · la pieza de LEGO de Billund */
+    '<rect x="5" y="15" width="54" height="23" rx="2"/>' +
+    '<rect x="9" y="7" width="10" height="8" rx="2"/>' +
+    '<rect x="23" y="7" width="10" height="8" rx="2"/>' +
+    '<rect x="37" y="7" width="10" height="8" rx="2"/>' +
+    '<rect x="51" y="7" width="8" height="8" rx="2"/>' + SUELO,
+
+    /* derecho · el castillo de Kronborg */
+    '<path d="M8 38V19h48v19z"/>' +
+    '<path d="M11 19V9h7v10zM28 19V6h8v13zM46 19V9h7v10z"/>' +
+    '<path d="M14.5 1l5 8h-10zM32 -3l6 9H26zM49.5 1l5 8h-10z"/>' + SUELO,
+
+    /* política · Christiansborg, sede del parlamento */
+    '<path d="M8 38V24h48v14z"/>' +
+    '<path d="M6 24L32 12l26 12z"/>' +
+    '<path d="M29 12V0h6v12z"/><path d="M32 -7l5 7h-10z"/>' + SUELO,
+
+    /* ética · la bicicleta de todos los días */
+    '<circle cx="14" cy="27" r="10" fill="none" stroke="currentColor" stroke-width="2.6"/>' +
+    '<circle cx="50" cy="27" r="10" fill="none" stroke="currentColor" stroke-width="2.6"/>' +
+    '<path d="M14 27h13M27 27l-4-12M23 15h13M36 15L27 27M36 15l14 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' +
+    '<path d="M19 12h8v2h-8z"/><path d="M34 11h7v2h-7z"/>' + SUELO,
+
+    /* religión · la catedral de Roskilde con sus agujas gemelas */
+    '<path d="M14 38V18h36v20z"/>' +
+    '<path d="M19 18V8h7v10zM38 18V8h7v10z"/>' +
+    '<path d="M22.5 -2l5 10h-10zM41.5 -2l5 10h-10z"/>' + SUELO,
+
+    /* conclusión · el faro de Skagen */
+    '<path d="M27 38l2-24h6l2 24z"/>' +
+    '<path d="M26 14h12v2H26z"/>' +
+    '<path d="M28 5h8v9h-8z"/>' +
+    '<path d="M32 -2l5 7H27z"/>' +
+    '<path d="M20 38h24v4H20z"/>' +
+    '<path d="M8 6h12v2H8zM44 6h12v2H44z" opacity=".55"/>' + SUELO,
+
+    /* bibliografía · un libro abierto */
+    '<path d="M4 12c9-4 18-4 27 1v25c-9-5-18-5-27-1z"/>' +
+    '<path d="M60 12c-9-4-18-4-27 1v25c9-5 18-5 27-1z"/>' + SUELO
+  ];
+
+  slides.forEach(function(s, i){
+    var d = document.createElement('div');
+    d.className = 'silueta';
+    d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<svg viewBox="-2 -10 68 55">' + (SILUETAS[i] || '') + '</svg>';
+    s.insertBefore(d, s.firstChild);
+  });
+
+  slides.forEach(function(_, i){
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', 'Diapositiva ' + (i + 1));
+    b.addEventListener('click', function(){ go(i); });
+    dotsBox.appendChild(b);
+  });
+  var dots = Array.prototype.slice.call(dotsBox.children);
+
+  function go(n){
+    var target = Math.max(0, Math.min(slides.length - 1, n));
+    if (target === idx && slides[idx].classList.contains('active')) return;
+
+    idx = target;
+    slides.forEach(function(s, i){ s.classList.toggle('active', i === idx); s.scrollTop = 0; });
+    dots.forEach(function(d, i){ d.classList.toggle('on', i === idx); });
+    counter.innerHTML = '<b>' + (idx + 1) + '</b> / ' + slides.length;
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+    var onColor = slides[idx].dataset.tone === 'color';
+    document.body.classList.toggle('oncolor', onColor);
+    progress.style.background = onColor ? '#fff' : 'var(--red)';
+    if (slides[idx].querySelector('#ring')) runGauge();
+    if (slides[idx].querySelector('#seg1')) runDonut();
+    if (location.hash !== '#' + (idx + 1)) history.replaceState(null, '', '#' + (idx + 1));
+
+  }
+
+  document.getElementById('next').addEventListener('click', function(){ go(idx + 1); });
+  document.getElementById('prev').addEventListener('click', function(){ go(idx - 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (['ArrowRight','PageDown',' '].indexOf(e.key) > -1) { e.preventDefault(); go(idx + 1); }
+    else if (['ArrowLeft','PageUp'].indexOf(e.key) > -1) { e.preventDefault(); go(idx - 1); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key.toLowerCase() === 'f') toggleFs();
+  });
+
+  var tx = 0, ty = 0;
+  document.addEventListener('touchstart', function(e){
+    tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    /* solo cambia de diapositiva si el gesto es claramente horizontal:
+       si no, se estaría comiendo el scroll vertical del celular */
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.7) go(idx + (dx < 0 ? 1 : -1));
+  }, {passive:true});
+
+  function toggleFs(){
+    if (!document.fullscreenElement) { var p = document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(function(){}); }
+    else document.exitFullscreen();
+  }
+  document.getElementById('fs').addEventListener('click', toggleFs);
+
+  document.querySelectorAll('[data-goto]').forEach(function(btn){
+    btn.addEventListener('click', function(){ go(+btn.dataset.goto); });
+  });
+
+  /* ── tribunales ── */
+  var courts = [
+    ['Tribunal Supremo (Højesteret)','Es la última instancia y fija la interpretación final de la ley. Lo que decide aquí marca cómo se entiende la norma en todo el país.'],
+    ['Las dos audiencias (Landsretter)','Conocen las apelaciones: revisan lo resuelto por los juzgados locales cuando alguna de las partes no queda conforme.'],
+    ['Los 24 juzgados locales (Byretter)','Son la primera instancia y resuelven la mayoría de los casos del país. Es la puerta de entrada al sistema judicial danés.']
+  ];
+  var cd = document.getElementById('courtDetail');
+  function showCourt(i){
+    cd.innerHTML = '<b>' + courts[i][0] + '</b><p>' + courts[i][1] + '</p>';
+    cd.classList.remove('fade-swap'); void cd.offsetWidth; cd.classList.add('fade-swap');
+  }
+  document.querySelectorAll('[data-court]').forEach(function(lv){
+    lv.addEventListener('click', function(){
+      document.querySelectorAll('[data-court]').forEach(function(o){ o.classList.remove('on'); });
+      lv.classList.add('on');
+      showCourt(+lv.dataset.court);
+    });
+  });
+  showCourt(0);
+
+  /* ── línea de tiempo ── */
+  var hitos = [
+    ['1814','Educación','Ley de educación primaria universal','Dinamarca garantiza por ley la educación primaria para toda la población.'],
+    ['1848','Revolución','La burguesía exige participar en el gobierno','El rey Federico VII acepta las demandas para evitar revueltas sangrientas. El conflicto se resuelve con una ley y no con una guerra.'],
+    ['1849','Constitución','Primera Constitución danesa','Nace directamente de la revolución del año anterior y convierte a Dinamarca en monarquía constitucional.'],
+    ['1953','Constitución','La versión que sigue vigente hoy','Es la reforma que rige actualmente el país. (Constitución de Dinamarca, 2025)'],
+    ['1955','Instituciones','Se crea el defensor del pueblo','Solo se dedica a vigilar que el Estado no abuse del ciudadano, y cualquiera puede acudir a él sin pagar.'],
+    ['1989','Derechos','Primer país en reconocer las uniones civiles','Primer país del mundo en reconocer legalmente las uniones civiles entre parejas del mismo sexo. La ley entró en vigor el 1 de octubre de 1989.']
+  ];
+  var tlDots = document.getElementById('tlDots');
+  var tlCard = document.getElementById('tlCard');
+  hitos.forEach(function(h, i){
+    var b = document.createElement('button');
+    b.className = 'tl-dot';
+    b.innerHTML = '<div class="d"></div><span>' + h[0] + '</span>';
+    b.addEventListener('click', function(){ showHito(i); });
+    tlDots.appendChild(b);
+  });
+  function showHito(i){
+    Array.prototype.slice.call(tlDots.children).forEach(function(d, j){ d.classList.toggle('on', i === j); });
+    tlCard.innerHTML = '<span class="tl-tag">' + hitos[i][1] + '</span><b>' + hitos[i][2] + '</b><p>' + hitos[i][3] + '</p>';
+    tlCard.classList.remove('fade-swap'); void tlCard.offsetWidth; tlCard.classList.add('fade-swap');
+  }
+  showHito(0);
+
+  /* ── medidor de transparencia ── */
+  var ring = document.getElementById('ring'), score = document.getElementById('score');
+  var C = 2 * Math.PI * 52;
+  ring.style.strokeDasharray = C; ring.style.strokeDashoffset = C;
+  var gaugeDone = false;
+  function runGauge(){
+    if (gaugeDone) return; gaugeDone = true;
+    setTimeout(function(){ ring.style.strokeDashoffset = C * (1 - 0.89); }, 250);
+    var t0 = performance.now(), dur = 1500;
+    (function tick(now){
+      var p = Math.min(1, (now - t0) / dur);
+      score.textContent = Math.round(89 * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })(performance.now());
+  }
+
+  /* ── dona de religión ── */
+  var CD = 2 * Math.PI * 49;
+  var segs = [['seg1', 71.4, 0], ['seg2', 4.3, 71.4], ['seg3', 24.3, 75.7]];
+  segs.forEach(function(s){ document.getElementById(s[0]).style.strokeDasharray = '0 ' + CD; });
+  var donutDone = false;
+  function runDonut(){
+    if (donutDone) return; donutDone = true;
+    segs.forEach(function(s, k){
+      var el = document.getElementById(s[0]);
+      el.style.strokeDashoffset = -(s[2] / 100) * CD;
+      setTimeout(function(){ el.style.strokeDasharray = (s[1] / 100 * CD - 1.5) + ' ' + CD; }, 220 + k * 180);
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     MÚSICA — melodía de aire folclórico nórdico sintetizada
+     (caja de música). Se genera con Web Audio: no depende de
+     archivos ni de internet.
+
+     ¿Quieren usar una grabación real en vez de esto?
+       1. Suban el archivo al repositorio como  musica.mp3
+       2. Cambien la línea de abajo por:  var AUDIO_FILE = 'musica.mp3';
+     Usen solo música de dominio público o con licencia libre.
+     ═══════════════════════════════════════════════════════════ */
+  var AUDIO_FILE = '';
+
+  var btn = document.getElementById('music');
+  var label = document.getElementById('musicLabel');
+  var ctx = null, master = null, loopTimer = null, playing = false, el = null;
+
+  var BPM = 96, BEAT = 60 / BPM;
+  var MELODY = [
+    [74,1],[76,1],[77,1],  [76,1],[74,1],[72,1],  [70,1.5],[72,.5],[74,1],  [69,3],
+    [74,1],[77,1],[79,1],  [77,1],[76,1],[74,1],  [72,1.5],[74,.5],[76,1],  [74,3],
+    [81,1],[79,1],[77,1],  [76,1],[74,1],[72,1],  [70,1],[72,1],[74,1],     [76,3],
+    [74,1],[72,1],[70,1],  [69,1],[70,1],[72,1],  [74,1.5],[72,.5],[70,1],  [62,3]
+  ];
+  var BASS = [50,45,46,41, 50,46,48,43, 53,48,50,45, 50,46,45,50];
+
+  function freq(n){ return 440 * Math.pow(2, (n - 69) / 12); }
+
+  function pluck(n, at, dur, amp){
+    var f = freq(n), a = amp === undefined ? .5 : amp;
+    [[1, 1, 'triangle'], [2, .32, 'sine'], [3, .1, 'sine']].forEach(function(h){
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = h[2]; o.frequency.value = f * h[0];
+      g.gain.setValueAtTime(0, at);
+      g.gain.linearRampToValueAtTime(a * h[1], at + .012);
+      g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+      o.connect(g); g.connect(master); o.start(at); o.stop(at + dur + .05);
+    });
+  }
+
+  function pad(n, at, dur){
+    var o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+    o.type = 'sine'; o.frequency.value = freq(n);
+    lp.type = 'lowpass'; lp.frequency.value = 700;
+    g.gain.setValueAtTime(0, at);
+    g.gain.linearRampToValueAtTime(.2, at + .5);
+    g.gain.setValueAtTime(.2, at + dur - .6);
+    g.gain.linearRampToValueAtTime(0, at + dur);
+    o.connect(lp); lp.connect(g); g.connect(master); o.start(at); o.stop(at + dur + .1);
+  }
+
+  function scheduleLoop(t0){
+    var t = t0;
+    MELODY.forEach(function(m){
+      var d = m[1] * BEAT * 1.7;
+      pluck(m[0], t, d, .5);                       /* melodía */
+      if (m[1] >= 1) pluck(m[0] - 5, t, d * .8, .15);  /* segunda voz, una cuarta abajo */
+      t += m[1] * BEAT;
+    });
+    var tb = t0;
+    BASS.forEach(function(n){
+      pad(n, tb, 3 * BEAT);
+      pad(n + 7, tb, 3 * BEAT);
+      pluck(n + 12, tb + BEAT, BEAT * 1.3, .11);       /* arpegio de acompañamiento */
+      pluck(n + 19, tb + 2 * BEAT, BEAT * 1.3, .08);
+      tb += 3 * BEAT;
+    });
+    return t - t0;
+  }
+
+  function startSynth(){
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { label.textContent = 'Sin audio'; return; }
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = 0;
+      master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(.16, ctx.currentTime + 1.2);
+    var len = scheduleLoop(ctx.currentTime + .15);
+    loopTimer = setInterval(function(){ scheduleLoop(ctx.currentTime + .15); }, len * 1000);
+  }
+
+  function stopSynth(){
+    if (loopTimer) { clearInterval(loopTimer); loopTimer = null; }
+    if (ctx && master) {
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
+    }
+  }
+
+  btn.addEventListener('click', function(){
+    playing = !playing;
+    btn.classList.toggle('on', playing);
+    label.textContent = playing ? 'Sonando' : 'Música';
+    if (AUDIO_FILE) {
+      if (!el) { el = new Audio(AUDIO_FILE); el.loop = true; el.volume = .35; }
+      if (playing) { var p = el.play(); if (p && p.catch) p.catch(function(){}); }
+      else el.pause();
+    } else {
+      if (playing) startSynth(); else stopSynth();
+    }
+  });
+
+  /* ═══════════════════════════════════════════════════════════
+     EMBARQUE — pantalla de inicio con anuncio hablado en español.
+     Dura 10 segundos y luego entrega la presentación.
+     ═══════════════════════════════════════════════════════════ */
+  var intro    = document.getElementById('intro');
+  var startBtn = document.getElementById('startBtn');
+  var skipBtn  = document.getElementById('skipBtn');
+  var estadoEl = document.getElementById('introEstado');
+  var temporizadores = [];
+
+  var hashN = parseInt((location.hash || '').replace('#', ''), 10);
+  var arranque = isNaN(hashN) ? 0 : hashN - 1;
+
+  var ANUNCIO = 'Bienvenidos al grupo cuatro. Se solicita al grupo de Claves del ' +
+                'Pensamiento uno pasar a abordar. Vuelo con destino a Copenhague, ' +
+                'Dinamarca. Puerta seis. Buen viaje.';
+
+  /* La API del navegador no dice el sexo de la voz, así que se elige por
+     nombre: primero las femeninas conocidas, y se descartan las masculinas. */
+  var FEMENINAS = ['sabina','helena','laura','elvira','dalia','ximena','marisol','salome',
+                   'paloma','monica','mónica','esperanza','lupe','isidora','catalina',
+                   'camila','tania','luciana','abril','renata','triana','lia','naia','vera'];
+  var MASCULINAS = ['pablo','raul','raúl','jorge','alvaro','álvaro','gonzalo','diego',
+                    'liam','carlos','miguel','juan','dario','darío','yago','arnau','tomas','tomás'];
+
+  function esFemenina(n){
+    n = (n || '').toLowerCase();
+    for (var i = 0; i < FEMENINAS.length; i++) if (n.indexOf(FEMENINAS[i]) > -1) return true;
+    return false;
+  }
+  function esMasculina(n){
+    n = (n || '').toLowerCase();
+    for (var i = 0; i < MASCULINAS.length; i++) if (n.indexOf(MASCULINAS[i]) > -1) return true;
+    return false;
+  }
+
+  /* las voces del navegador cargan de forma asíncrona: hay que esperarlas */
+  function vozEspanola(){
+    var vs = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    var esp = [];
+    for (var j = 0; j < vs.length; j++) {
+      if (vs[j].lang && vs[j].lang.toLowerCase().indexOf('es') === 0) esp.push(vs[j]);
+    }
+    if (!esp.length) return null;
+
+    var pref = ['es-gt','es-mx','es-us','es-es','es'];
+    /* 1.ª vuelta: femenina del acento preferido · 2.ª: cualquiera no masculina */
+    for (var ronda = 0; ronda < 2; ronda++) {
+      for (var p = 0; p < pref.length; p++) {
+        for (var k = 0; k < esp.length; k++) {
+          var v = esp[k];
+          if (v.lang.toLowerCase().indexOf(pref[p]) !== 0) continue;
+          if (ronda === 0 && !esFemenina(v.name)) continue;
+          if (ronda === 1 && esMasculina(v.name)) continue;
+          return v;
+        }
+      }
+    }
+    return esp[0];
+  }
+
+  function hablar(alTerminar){
+    if (!window.speechSynthesis) { if (alTerminar) alTerminar(); return; }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(ANUNCIO);
+      var v = vozEspanola();
+      if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'es-ES'; }
+      u.rate = .98; u.volume = 1;
+      /* si no se consiguió una voz femenina, se sube el tono para acercarla */
+      u.pitch = (v && esFemenina(v.name)) ? 1.02 : 1.25;
+      if (alTerminar) { u.onend = alTerminar; u.onerror = alTerminar; }
+      window.speechSynthesis.speak(u);
+    } catch (e) { if (alTerminar) alTerminar(); }
+  }
+  if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
+  function cerrarIntro(){
+    temporizadores.forEach(clearTimeout);
+    temporizadores = [];
+    if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+    intro.classList.add('done');
+    go(arranque);
+  }
+
+  function embarcar(){
+    intro.classList.add('go');
+    startBtn.disabled = true;
+
+    var inicio = new Date().getTime();
+    var cerrado = false;
+    var hablado = false;
+
+    /* No se cierra hasta que la voz termina de verdad: cortarla a los 10 s
+       exactos era lo que sonaba a tijeretazo. Los 10 s son el mínimo, no el
+       máximo, y aun así hay un tope por si el navegador no avisa. */
+    function cerrarCuandoToque(){
+      if (cerrado) return;
+      var falta = 10000 - (new Date().getTime() - inicio);
+      if (falta > 0) { temporizadores.push(setTimeout(cerrarCuandoToque, falta + 60)); return; }
+      cerrado = true;
+      cerrarIntro();
+    }
+
+    function lanzarVoz(){
+      if (hablado) return;
+      hablado = true;
+      hablar(function(){
+        /* respiro después de la última palabra, para que no se solape */
+        temporizadores.push(setTimeout(cerrarCuandoToque, 1200));
+      });
+    }
+
+    /* si las voces aún no cargaron, se espera al evento y se habla ahí */
+    if (window.speechSynthesis && window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = function(){
+        window.speechSynthesis.onvoiceschanged = null;
+        lanzarVoz();
+      };
+      temporizadores.push(setTimeout(lanzarVoz, 900));   /* red de seguridad */
+    } else {
+      temporizadores.push(setTimeout(lanzarVoz, 450));
+    }
+
+    var pasos = [
+      [2600, 'Puerta 06 cerrada'],
+      [4900, 'Autorizados para despegar'],
+      [7300, 'En vuelo hacia Copenhague']
+    ];
+    pasos.forEach(function(p){
+      temporizadores.push(setTimeout(function(){
+        estadoEl.textContent = p[1];
+        var b = document.getElementById('estadoBoard');
+        if (b) b.textContent = p[1];
+      }, p[0]));
+    });
+
+    /* la música entra cuando el anuncio ya va terminando */
+    temporizadores.push(setTimeout(function(){
+      try { document.getElementById('music').click(); } catch (e) {}
+    }, 7600));
+
+    /* tope absoluto, por si onend nunca llega */
+    temporizadores.push(setTimeout(cerrarCuandoToque, 16000));
+  }
+
+  startBtn.addEventListener('click', embarcar);
+  skipBtn.addEventListener('click', cerrarIntro);
+
+  /* si alguien entra directo a una diapositiva concreta, no se le pone el embarque */
+  if (arranque > 0) { intro.classList.add('done'); go(arranque); }
+})();
+</script>
+</body>
+</html>

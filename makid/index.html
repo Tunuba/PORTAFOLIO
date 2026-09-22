@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAKID — demo</title>
+<style>
+  :root{--fondo:#f4f6fb;--panel:#fff;--borde:#dde3f0;--texto:#1e2433;--tenue:#6b7280;--acento:#4f46e5;--bien:#16a34a;--mal:#dc2626;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--texto);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--borde);background:#fff;flex-wrap:wrap;gap:8px}
+  .marca{font-weight:700;font-size:18px;display:flex;align-items:center;gap:6px}
+  .marca b{color:var(--acento)}
+  .aviso{font-size:12px;color:var(--tenue);border:1px solid var(--borde);padding:4px 10px;border-radius:20px}
+  nav{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid var(--borde);background:#fff}
+  nav button{background:transparent;border:none;padding:9px 16px;border-radius:8px;font-size:13px;color:var(--tenue);cursor:pointer;font-weight:600}
+  nav button.activo{background:#ecebfd;color:var(--acento)}
+  main{padding:26px;max-width:960px;margin:0 auto}
+  .vista{display:none}
+  .vista.activa{display:block}
+  h1{font-size:24px;margin:0 0 4px}
+  p.sub{color:var(--tenue);font-size:13px;margin:0 0 20px;line-height:1.5}
+  .grid-ejes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+  .eje{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:16px}
+  .eje .icono{font-size:22px;margin-bottom:6px}
+  .eje b{font-size:14px;display:block;margin-bottom:4px}
+  .eje span{font-size:12px;color:var(--tenue);display:block;margin-bottom:10px;line-height:1.4}
+  .mini-barra-fondo{background:#ececf7;border-radius:20px;height:8px;overflow:hidden}
+  .mini-barra-rel{height:100%;border-radius:20px;background:var(--acento)}
+  .mini-txt{font-size:11px;color:var(--tenue);margin-top:5px}
+  h2.subtitulo{font-size:15px;margin:0 0 10px}
+  .bandas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+  .banda-chip{font-size:11px;padding:6px 12px;border-radius:20px;font-weight:600;border:1px solid var(--borde);color:var(--tenue);background:#fff}
+  .banda-chip.completa{background:#e9f7ed;color:var(--bien);border-color:#bfe6ca}
+  .banda-chip.actual{background:#ecebfd;color:var(--acento);border-color:#c8c4f7}
+  .nota-caja{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:16px 18px;max-width:440px}
+  .nota-caja b{font-size:13px}
+  .nota-desglose{display:flex;height:10px;border-radius:20px;overflow:hidden;margin:10px 0 8px}
+  .nota-zona{background:var(--acento)}
+  .nota-examenes{background:#a5b4fc}
+  .nota-leyenda{display:flex;justify-content:space-between;font-size:11px;color:var(--tenue)}
+  .practica-caja{background:var(--panel);border:1px solid var(--borde);border-radius:12px;padding:26px;max-width:480px;text-align:center}
+  .practica-caja .marcador{font-size:12px;color:var(--tenue);margin-bottom:6px}
+  .practica-caja .eje-tag{display:inline-block;font-size:11px;font-weight:700;color:var(--acento);background:#ecebfd;padding:3px 10px;border-radius:20px;margin-bottom:14px}
+  .pregunta{font-size:24px;font-weight:800;margin:6px 0 20px}
+  .opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opciones button{background:#fff;border:1px solid var(--borde);border-radius:8px;padding:14px;font-size:16px;cursor:pointer;color:var(--texto);font-weight:700;transition:transform .1s ease}
+  .opciones button:hover{border-color:var(--acento)}
+  .opciones button:active{transform:scale(.97)}
+  .opciones button.correcta{background:#e9f7ed;border-color:var(--bien);color:var(--bien)}
+  .opciones button.incorrecta{background:#fdeaea;border-color:var(--mal);color:var(--mal)}
+  .opciones button:disabled{cursor:default}
+  .feedback{margin-top:16px;font-size:13px;min-height:20px}
+  .feedback.bien{color:var(--bien);font-weight:700}
+  .feedback.mal{color:var(--mal);font-weight:700}
+  .btn-siguiente{margin-top:14px;background:var(--acento);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:none}
+  footer{padding:10px 20px;border-top:1px solid var(--borde);font-size:11px;color:var(--tenue);display:flex;justify-content:space-between;background:#fff;flex-wrap:wrap;gap:6px}
+  footer a{color:var(--acento);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">➗ <b>MAKID</b></div>
+  <div class="aviso">Demo estática del portafolio · sin cuenta ni datos reales</div>
+</header>
+<nav>
+  <button class="activo" data-v="ejes">Ejes y bandas</button>
+  <button data-v="practica">Práctica</button>
+</nav>
+<main>
+  <div class="vista activa" id="v-ejes">
+    <h1>Tu mapa de matemáticas</h1>
+    <p class="sub">Cuatro escaleras que avanzan por separado: recitar la tabla del 7 no dice si sabés comparar decimales.</p>
+    <div class="grid-ejes" id="grid-ejes"></div>
+
+    <h2 class="subtitulo">Bandas del currículo (CNB)</h2>
+    <div class="bandas" id="bandas"></div>
+
+    <div class="nota-caja">
+      <b>Cómo se arma la nota</b>
+      <div class="nota-desglose">
+        <div class="nota-zona" style="width:60%"></div>
+        <div class="nota-examenes" style="width:40%"></div>
+      </div>
+      <div class="nota-leyenda">
+        <span>🟦 Zona (lecciones + tareas)</span>
+        <span>🟪 Exámenes por bloque</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vista" id="v-practica">
+    <h1>Practicá una operación</h1>
+    <p class="sub">Un ítem corto, como los que arma cada motor de juego sembrado en el currículo.</p>
+    <div class="practica-caja">
+      <div class="eje-tag" id="eje-tag">operaciones</div>
+      <div class="marcador" id="marcador">Aciertos: 0 / 0</div>
+      <div class="pregunta" id="pregunta">7 × 8 = ?</div>
+      <div class="opciones" id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="btn-siguiente" id="btn-siguiente">Otra pregunta →</button>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>Maqueta del portafolio, inspirada en el proyecto real (MAKID: fork de ENKID para matemáticas sobre el currículo oficial de Guatemala, con 17 motores de juego propios).</span>
+  <a href="../index.html">← volver al portafolio</a>
+</footer>
+<script>
+// ---------- Ejes y bandas ----------
+const ejes = [
+  { icono: '🔢', nombre: 'Numeración', desc: 'Qué ES un número: contar, valor posicional, comparar.', avance: 70 },
+  { icono: '➕', nombre: 'Operaciones', desc: 'Qué se HACE con él: sumar, restar, multiplicar, dividir.', avance: 55 },
+  { icono: '📐', nombre: 'Geometría', desc: 'El espacio y la medida: figuras, área, tiempo.', avance: 30 },
+  { icono: '🔁', nombre: 'Patrones', desc: 'La relación: series, regularidades, datos.', avance: 40 },
+];
+document.getElementById('grid-ejes').innerHTML = ejes.map(e => `
+  <div class="eje">
+    <div class="icono">${e.icono}</div>
+    <b>${e.nombre}</b>
+    <span>${e.desc}</span>
+    <div class="mini-barra-fondo"><div class="mini-barra-rel" style="width:${e.avance}%"></div></div>
+    <div class="mini-txt">${e.avance}% de la escalera</div>
+  </div>`).join('');
+
+const bandas = [
+  { n: 'pre-conteo', estado: 'completa' },
+  { n: 'conteo', estado: 'completa' },
+  { n: 'aditivo', estado: 'completa' },
+  { n: 'pre-multiplicativo', estado: 'actual' },
+  { n: 'multiplicativo', estado: '' },
+  { n: 'pre-racional', estado: '' },
+  { n: 'racional', estado: '' },
+  { n: 'pre-algebraico', estado: '' },
+  { n: 'algebraico', estado: '' },
+];
+document.getElementById('bandas').innerHTML = bandas.map(b =>
+  `<span class="banda-chip ${b.estado}">${b.estado === 'completa' ? '✓ ' : ''}${b.n}</span>`).join('');
+
+// ---------- Práctica ----------
+const preguntas = [
+  { eje: 'operaciones', texto: '7 × 8 = ?', opciones: ['54', '56', '64', '48'], correcta: 1 },
+  { eje: 'numeración', texto: '¿Cuál es mayor, 0,7 o 0,25?', opciones: ['0,7', '0,25', 'Son iguales', 'No se puede saber'], correcta: 0 },
+  { eje: 'operaciones', texto: '45 ÷ 9 = ?', opciones: ['4', '5', '6', '9'], correcta: 1 },
+  { eje: 'patrones', texto: '2, 4, 6, 8, ¿?', opciones: ['9', '10', '12', '16'], correcta: 1 },
+  { eje: 'geometría', texto: 'Un rectángulo de 4 × 3, ¿cuántas celdas de área tiene?', opciones: ['7', '10', '12', '14'], correcta: 2 },
+];
+let indiceActual = 0;
+let aciertos = 0, intentos = 0;
+
+function mostrarPregunta() {
+  const p = preguntas[indiceActual];
+  document.getElementById('eje-tag').textContent = p.eje;
+  document.getElementById('pregunta').textContent = p.texto;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btn-siguiente').style.display = 'none';
+  document.getElementById('opciones').innerHTML = p.opciones.map((o, i) => `<button data-i="${i}">${o}</button>`).join('');
+}
+
+document.getElementById('opciones').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const p = preguntas[indiceActual];
+  const elegido = Number(e.target.dataset.i);
+  intentos++;
+  const botones = document.querySelectorAll('#opciones button');
+  botones.forEach(b => b.disabled = true);
+  const feedback = document.getElementById('feedback');
+  if (elegido === p.correcta) {
+    aciertos++;
+    e.target.classList.add('correcta');
+    feedback.textContent = '¡Correcto!';
+    feedback.className = 'feedback bien';
+  } else {
+    e.target.classList.add('incorrecta');
+    botones[p.correcta].classList.add('correcta');
+    feedback.textContent = 'La respuesta correcta era "' + p.opciones[p.correcta] + '".';
+    feedback.className = 'feedback mal';
+  }
+  document.getElementById('marcador').textContent = `Aciertos: ${aciertos} / ${intentos}`;
+  document.getElementById('btn-siguiente').style.display = 'inline-block';
+});
+
+document.getElementById('btn-siguiente').addEventListener('click', () => {
+  indiceActual = (indiceActual + 1) % preguntas.length;
+  mostrarPregunta();
+});
+mostrarPregunta();
+
+// ---------- navegación de pestañas ----------
+document.querySelectorAll('nav button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.remove('activo'));
+    document.querySelectorAll('.vista').forEach(x => x.classList.remove('activa'));
+    b.classList.add('activo');
+    document.getElementById('v-' + b.dataset.v).classList.add('activa');
+  });
+});
+</script>
+</body>
+</html>
